@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="1758973844662-1" author="Artem Petrov">
+        <sql>
+            CREATE TABLE movie
+            (
+                id    BIGSERIAL    NOT NULL,
+                isan  UUID         NOT NULL,
+                title VARCHAR(255) NOT NULL,
+                year  SMALLINT     NOT NULL,
+
+                CONSTRAINT movie_pk PRIMARY KEY (id),
+                CONSTRAINT movie_isan_uq UNIQUE (isan)
+            );
+        </sql>
+        <rollback>
+            <sql>DROP TABLE movie;</sql>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

@@ -18,10 +18,17 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
 
 repositories {
     mavenCentral()
+}
+
+ext {
+    mapstructVersion = '1.6.2'
+    mapstructSpringExtensionsVersion = '1.1.3'
 }
 
 dependencies {
@@ -30,6 +37,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.liquibase:liquibase-core'
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    implementation "org.mapstruct.extensions.spring:mapstruct-spring-annotations:${mapstructSpringExtensionsVersion}"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
@@ -41,11 +51,43 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor "org.mapstruct.extensions.spring:mapstruct-spring-extensions:${mapstructSpringExtensionsVersion}"
+    testAnnotationProcessor "org.mapstruct.extensions.spring:mapstruct-spring-extensions:${mapstructSpringExtensionsVersion}"
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+}
+
+
+sourceSets {
+    integrationTest {
+        java.srcDir 'src/test/it'
+        resources.srcDir 'src/test/resources'
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+test {
+    testLogging.showStandardStreams = true
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+tasks.register('integrationTest', Test) {
+    group = 'verification'
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    mustRunAfter test
+    useJUnitPlatform() {
+        filter {
+            includeTestsMatching '*IT'
+        }
+    }
+
+}
+
+check.dependsOn integrationTest
