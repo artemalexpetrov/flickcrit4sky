@@ -2,7 +2,6 @@ package com.flickcrit.app.infrastructure.persistence.converter;
 
 import com.flickcrit.app.domain.model.movie.Movie;
 import com.flickcrit.app.infrastructure.persistence.model.MovieEntity;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Year;
@@ -12,12 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class MovieEntityToMovieConverterTest {
 
-    private MovieEntityToMovieConverter converter;
-
-    @BeforeEach
-    void setUp() {
-        converter = new MovieEntityToMovieConverter();
-    }
+    private final MovieEntityToMovieConverter converter = new MovieEntityToMovieConverter();
 
     @Test
     void givenMovieEntityWhenConvertExpectMovie() {

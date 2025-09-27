@@ -3,7 +3,7 @@ package com.flickcrit.app.infrastructure.api.controller;
 import com.flickcrit.app.domain.model.movie.MovieId;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieCreateRequest;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieDto;
-import com.flickcrit.app.infrastructure.api.model.movie.common.PageResponse;
+import com.flickcrit.app.infrastructure.api.model.common.PageResponse;
 import com.flickcrit.app.infrastructure.api.port.MoviePort;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -26,7 +26,7 @@ public class MovieControllerV1 {
         return port.getMovies(pagingRequest);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id:\\d+}")
     MovieDto getMovie(@PathVariable MovieId id) {
         return port.getMovie(id);
     }
@@ -37,12 +37,12 @@ public class MovieControllerV1 {
         return port.createMovie(request);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id:\\d+}")
     MovieDto updateMovie(@PathVariable MovieId id, @NotNull @RequestBody @Valid MovieCreateRequest request) {
         return port.updateMovie(id, request);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id:\\d+}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteMovie(@PathVariable MovieId id) {
         port.deleteMovie(id);

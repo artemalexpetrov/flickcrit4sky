@@ -29,6 +29,7 @@ repositories {
 ext {
     mapstructVersion = '1.6.2'
     mapstructSpringExtensionsVersion = '1.1.3'
+    hypersistanceUtilsVersion = '3.11.0'
 }
 
 dependencies {
@@ -40,6 +41,7 @@ dependencies {
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     implementation "org.mapstruct.extensions.spring:mapstruct-spring-annotations:${mapstructSpringExtensionsVersion}"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    implementation "io.hypersistence:hypersistence-utils-hibernate-63:${hypersistanceUtilsVersion}"
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'

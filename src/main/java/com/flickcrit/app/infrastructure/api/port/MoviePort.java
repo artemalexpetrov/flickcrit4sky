@@ -3,7 +3,7 @@ package com.flickcrit.app.infrastructure.api.port;
 import com.flickcrit.app.domain.model.movie.MovieId;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieCreateRequest;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieDto;
-import com.flickcrit.app.infrastructure.api.model.movie.common.PageResponse;
+import com.flickcrit.app.infrastructure.api.model.common.PageResponse;
 import org.springframework.data.domain.Pageable;
 
 /**

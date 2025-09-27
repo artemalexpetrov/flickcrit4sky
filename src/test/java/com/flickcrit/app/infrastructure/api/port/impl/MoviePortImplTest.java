@@ -6,7 +6,7 @@ import com.flickcrit.app.domain.model.movie.MovieId;
 import com.flickcrit.app.domain.service.MovieService;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieCreateRequest;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieDto;
-import com.flickcrit.app.infrastructure.api.model.movie.common.PageResponse;
+import com.flickcrit.app.infrastructure.api.model.common.PageResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

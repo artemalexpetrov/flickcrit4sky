@@ -1,4 +1,4 @@
-package com.flickcrit.app.infrastructure.api.model.movie.common;
+package com.flickcrit.app.infrastructure.api.model.common;
 
 import lombok.Builder;
 import lombok.Getter;

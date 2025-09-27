@@ -31,7 +31,7 @@ class MovieToMovieEntityConverterTest {
     }
 
     @Test
-    void givenMovieWithoutId_whenConvert_thenReturnsMovieEntityWithoutId() {
+    void givenMovieWithoutIdWhenConvertThenReturnsMovieEntityWithoutId() {
         // given
         Movie movie = createMovieBuilder().id(null).build();
 
