@@ -8,6 +8,7 @@ import com.flickcrit.app.infrastructure.api.port.MoviePort;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.UUID;
@@ -67,6 +68,7 @@ public class MovieControllerV1IT extends BaseControllerIT {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     void givenValidMovieWhenCreateMovieThenReturnCreated() throws Exception {
         // given
         MovieDto movieDto = createMovieBuilder().build();

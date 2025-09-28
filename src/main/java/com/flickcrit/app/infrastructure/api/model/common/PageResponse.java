@@ -17,6 +17,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class PageResponse<T> {
 
+    private static final int INITIAL_PAGE = 0;
+
     private final List<T> items;
     private final long total;
     private final int page;
@@ -36,7 +38,7 @@ public final class PageResponse<T> {
             .pageSize(items.size())
             .total(items.size())
             .items(items)
-            .page(1)
+            .page(INITIAL_PAGE)
             .build();
     }
 }

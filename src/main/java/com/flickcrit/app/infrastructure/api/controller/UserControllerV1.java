@@ -7,9 +7,11 @@ import com.flickcrit.app.infrastructure.api.port.UserPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Secured("ROLE_ADMIN")
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
 public class UserControllerV1 {

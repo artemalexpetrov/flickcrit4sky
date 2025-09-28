@@ -19,6 +19,12 @@ class UserServiceImpl implements UserService {
     private final UserRepository repository;
 
     @Override
+    public User createUser(Email email, String password) {
+        User user = new User(email, password);
+        return repository.save(user);
+    }
+
+    @Override
     public User getUser(@NonNull UserId id) {
         return repository
             .findById(id)

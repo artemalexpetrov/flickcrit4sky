@@ -29,6 +29,10 @@ public record Email(String value) {
     }
 
     private static void validateValue(String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("Email value must not be null");
+        }
+
         if (!EMAIL_PATTERN.matcher(value).matches()) {
             throw new IllegalArgumentException("Invalid email address");
         }
