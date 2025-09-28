@@ -2,6 +2,8 @@ package com.flickcrit.app.infrastructure.persistence.repository;
 
 import com.flickcrit.app.domain.model.movie.Movie;
 import com.flickcrit.app.domain.model.movie.MovieId;
+import com.flickcrit.app.domain.model.rating.Rating;
+import com.flickcrit.app.domain.model.rating.RatingId;
 import com.flickcrit.app.infrastructure.persistence.model.MovieEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -168,19 +170,16 @@ class MovieRepositoryImplTest {
     void deleteWhenValidMovieThenDeletesMovie() {
         // given
         Movie movieToDelete = mock(Movie.class);
-        MovieEntity entityToDelete = mock(MovieEntity.class);
-
-        when(converterMock
-            .convert(eq(movieToDelete), eq(MovieEntity.class)))
-            .thenReturn(entityToDelete);
+        MovieId movieId = MovieId.of(15L);
+        when(movieToDelete.getId()).thenReturn(movieId);
 
         // when
         movieRepository.delete(movieToDelete);
 
         // then
-        verify(converterMock).convert(movieToDelete, MovieEntity.class);
-        verify(jpaRepositoryMock).delete(entityToDelete);
-        verifyNoMoreInteractions(jpaRepositoryMock, converterMock);
+        verify(jpaRepositoryMock).deleteById(movieId.value());
+        verifyNoMoreInteractions(jpaRepositoryMock);
+        verifyNoInteractions(converterMock);
     }
 
     @Test

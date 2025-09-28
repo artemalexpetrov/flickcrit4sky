@@ -12,7 +12,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Transactional
-public class JpaUserRepositoryIT extends BaseSpringBootIT {
+class JpaUserRepositoryIT extends BaseSpringBootIT {
 
     @Autowired
     private JpaUserRepository repository;

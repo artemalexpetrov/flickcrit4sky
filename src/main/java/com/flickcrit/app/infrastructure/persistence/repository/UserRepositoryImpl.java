@@ -1,5 +1,6 @@
 package com.flickcrit.app.infrastructure.persistence.repository;
 
+import com.flickcrit.app.domain.model.common.EntityId;
 import com.flickcrit.app.domain.model.user.Email;
 import com.flickcrit.app.domain.model.user.User;
 import com.flickcrit.app.domain.model.user.UserId;
@@ -11,12 +12,10 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Repository
-@Transactional
 @RequiredArgsConstructor
 class UserRepositoryImpl implements UserRepository {
 
@@ -53,7 +52,9 @@ class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void delete(@NonNull User user) {
-        jpaRepository.delete(convertToEntity(user));
+        Optional.ofNullable(user.getId())
+            .map(EntityId::value)
+            .ifPresent(jpaRepository::deleteById);
     }
 
     private User convertToDomain(UserEntity entity) {

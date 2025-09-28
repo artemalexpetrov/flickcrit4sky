@@ -29,12 +29,12 @@ public record Email(String value) {
     }
 
     private static void validateValue(String value) {
-        if (value == null) {
-            throw new IllegalArgumentException("Email value must not be null");
+        if (!isValidEmail(value)) {
+            throw new IllegalArgumentException("Invalid email address: " + value);
         }
+    }
 
-        if (!EMAIL_PATTERN.matcher(value).matches()) {
-            throw new IllegalArgumentException("Invalid email address");
-        }
+    public static boolean isValidEmail(String value) {
+        return value != null && EMAIL_PATTERN.matcher(value).matches();
     }
 }

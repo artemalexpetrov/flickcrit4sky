@@ -36,16 +36,11 @@ class AuthPortImplTest {
         String password = "password123";
 
         SignUpRequestDto request = new SignUpRequestDto(email, password, password);
-        TokenPair tokenPair = mock(TokenPair.class);
         String encodedPassword = "encodedPassword";
 
         when(authServiceMock
             .encodePassword(any()))
             .thenReturn(encodedPassword);
-
-        when(authServiceMock
-            .authenticate(any(), any()))
-            .thenReturn(tokenPair);
 
         // when
         authPort.signUp(request);

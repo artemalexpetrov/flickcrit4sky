@@ -11,14 +11,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
 
     @Override
+    @Transactional
     public User createUser(Email email, String password) {
         User user = new User(email, password);
         return repository.save(user);
@@ -44,11 +47,13 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User save(@NonNull User user) {
         return repository.save(user);
     }
 
     @Override
+    @Transactional
     public void delete(@NonNull User user) {
         repository.delete(user);
     }

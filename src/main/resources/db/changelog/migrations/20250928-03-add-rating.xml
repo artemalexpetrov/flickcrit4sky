@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+
+    <changeSet id="1759066773191-1" author="Artem Petrov">
+        <sql>
+            CREATE TABLE rating (
+                id BIGSERIAL NOT NULL ,
+                user_id BIGINT NOT NULL,
+                movie_id BIGINT NOT NULL,
+                rating INT NOT NULL,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+                CONSTRAINT rating_pk PRIMARY KEY (id),
+                CONSTRAINT rating_user_movie_uc UNIQUE (user_id, movie_id),
+                CONSTRAINT rating_user_id_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                CONSTRAINT rating_movie_id_fk FOREIGN KEY (movie_id) REFERENCES movie(id) ON DELETE CASCADE
+            );
+        </sql>
+
+        <rollback>
+            <sql>DROP TABLE rating;</sql>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

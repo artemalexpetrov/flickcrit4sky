@@ -1,5 +1,6 @@
 package com.flickcrit.app.infrastructure.persistence.repository;
 
+import com.flickcrit.app.domain.model.common.EntityId;
 import com.flickcrit.app.domain.model.movie.Movie;
 import com.flickcrit.app.domain.model.movie.MovieId;
 import com.flickcrit.app.domain.repository.MovieRepository;
@@ -10,12 +11,10 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Repository
-@Transactional
 @RequiredArgsConstructor
 class MovieRepositoryImpl implements MovieRepository {
 
@@ -46,7 +45,9 @@ class MovieRepositoryImpl implements MovieRepository {
 
     @Override
     public void delete(@NonNull Movie movie) {
-        jpaRepository.delete(convertToEntity(movie));
+        Optional.ofNullable(movie.getId())
+            .map(EntityId::value)
+            .ifPresent(jpaRepository::deleteById);
     }
 
     private Movie convertToDomain(MovieEntity entity) {

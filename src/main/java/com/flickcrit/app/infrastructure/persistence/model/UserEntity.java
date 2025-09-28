@@ -30,7 +30,7 @@ public class UserEntity {
     @Column(nullable = false)
     private String password;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLArrayJdbcType.class)
     @Type(value = EnumArrayType.class, parameters = @Parameter(
         name = AbstractArrayType.SQL_ARRAY_TYPE,

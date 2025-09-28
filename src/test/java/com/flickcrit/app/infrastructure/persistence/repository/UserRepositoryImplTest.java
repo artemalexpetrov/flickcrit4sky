@@ -1,5 +1,7 @@
 package com.flickcrit.app.infrastructure.persistence.repository;
 
+import com.flickcrit.app.domain.model.movie.Movie;
+import com.flickcrit.app.domain.model.movie.MovieId;
 import com.flickcrit.app.domain.model.user.Email;
 import com.flickcrit.app.domain.model.user.User;
 import com.flickcrit.app.domain.model.user.UserId;
@@ -213,19 +215,16 @@ class UserRepositoryImplTest {
     void deleteWhenValidUserThenDeletesUser() {
         // given
         User userToDelete = mock(User.class);
-        UserEntity entityToDelete = mock(UserEntity.class);
-
-        when(converterMock
-            .convert(eq(userToDelete), eq(UserEntity.class)))
-            .thenReturn(entityToDelete);
+        UserId userId = UserId.of(15L);
+        when(userToDelete.getId()).thenReturn(userId);
 
         // when
         repository.delete(userToDelete);
 
         // then
-        verify(converterMock).convert(userToDelete, UserEntity.class);
-        verify(jpaRepositoryMock).delete(entityToDelete);
-        verifyNoMoreInteractions(jpaRepositoryMock, converterMock);
+        verify(jpaRepositoryMock).deleteById(userId.value());
+        verifyNoMoreInteractions(jpaRepositoryMock);
+        verifyNoInteractions(converterMock);
     }
 
     @Test
