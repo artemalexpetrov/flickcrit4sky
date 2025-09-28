@@ -47,7 +47,7 @@ class MovieServiceImplTest {
     }
 
     @Test
-    void givenNoMovieWhenGetMovieByIdExpectMovie() {
+    void givenNoMovieWhenGetMovieByIdExpectException() {
         // given
         MovieId movieId = MovieId.of(1L);
         when(repositoryMock

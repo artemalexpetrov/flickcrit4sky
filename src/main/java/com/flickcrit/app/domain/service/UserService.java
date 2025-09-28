@@ -14,6 +14,16 @@ import org.springframework.data.domain.Pageable;
 public interface UserService {
 
     /**
+     * Creates a new user with the specified email and password.
+     * The created user will have a unique identifier and the provided credentials.
+     *
+     * @param email the email address of the user to be created; must not be null
+     * @param password the password of the user to be created; must not be null
+     * @return the newly created user
+     */
+    User createUser(Email email, String password);
+
+    /**
      * Retrieves a user by their unique identifier.
      *
      * @param id the unique identifier of the user to retrieve, must not be null

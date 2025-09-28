@@ -21,14 +21,14 @@ public class User {
     @EqualsAndHashCode.Include
     private final Email email;
     private final Set<UserRole> roles;
-    private String password;
+    private final String password;
 
     /**
      * Constructs a new User instance with the specified email and password.
      * A unique UserId is generated for the new User.
      */
     public User(Email email, String password) {
-        this(null, email, password, Set.of());
+        this(null, email, password, Set.of(UserRole.USER));
     }
 
     /**

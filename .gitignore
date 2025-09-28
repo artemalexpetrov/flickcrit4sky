@@ -7,6 +7,9 @@ build/
 dev/
 **/*local*.yaml
 **/*local*.properties
+**/*local*.json
+**/*env*.json
+!**/*env*.json
 .env
 
 ### STS ###

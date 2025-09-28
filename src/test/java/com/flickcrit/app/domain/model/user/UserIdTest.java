@@ -1,5 +1,6 @@
-package com.flickcrit.app.domain.model.movie;
+package com.flickcrit.app.domain.model.user;
 
+import com.flickcrit.app.domain.model.movie.MovieId;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

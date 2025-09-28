@@ -2,14 +2,19 @@ package com.flickcrit.app.infrastructure.api.controller;
 
 import com.flickcrit.app.domain.exception.EntityNotFoundException;
 import com.flickcrit.app.domain.model.movie.MovieId;
+import com.flickcrit.app.infrastructure.api.model.common.PageResponse;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieCreateRequest;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieDto;
 import com.flickcrit.app.infrastructure.api.port.MoviePort;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -22,6 +27,31 @@ public class MovieControllerV1IT extends BaseControllerIT {
 
     @MockitoBean
     private MoviePort portMock;
+
+    @Test
+    void whenGetMoviesExpectMoviesPage() throws Exception {
+        // given
+        PageRequest pageRequest = PageRequest.of(10, 100);
+        MovieDto movieDto = createMovieBuilder().build();
+
+        when(portMock
+            .getMovies(any()))
+            .thenReturn(PageResponse.of(List.of(movieDto)));
+
+        // when / then
+        mockMvc.perform(get("/api/v1/movies?page=10&size=100")
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.items").isArray())
+            .andExpect(jsonPath("$.items[0].id").value(movieDto.id()))
+            .andExpect(jsonPath("$.items[0].isan").value(movieDto.isan().toString()))
+            .andExpect(jsonPath("$.items[0].title").value(movieDto.title()))
+            .andExpect(jsonPath("$.items[0].year").value(movieDto.year()));
+
+        verify(portMock).getMovies(pageRequest);
+        verifyNoMoreInteractions(portMock);
+    }
 
     @Test
     void givenValidIdWhenGetMovieThenReturnMovie() throws Exception {
@@ -66,138 +96,183 @@ public class MovieControllerV1IT extends BaseControllerIT {
         verifyNoMoreInteractions(portMock);
     }
 
-    @Test
-    void givenValidMovieWhenCreateMovieThenReturnCreated() throws Exception {
-        // given
-        MovieDto movieDto = createMovieBuilder().build();
-        MovieCreateRequest request = createMovieCreateRequestBuilder().build();
+    @Nested
+    @WithMockUser(roles = "ADMIN")
+    class MoviesAdminTests {
+        @Test
+        void givenValidMovieWhenCreateMovieThenReturnCreated() throws Exception {
+            // given
+            MovieDto movieDto = createMovieBuilder().build();
+            MovieCreateRequest request = createMovieCreateRequestBuilder().build();
 
-        when(portMock
-            .createMovie(any()))
-            .thenReturn(movieDto);
+            when(portMock
+                .createMovie(any()))
+                .thenReturn(movieDto);
 
-        // when / then
-        mockMvc.perform(post("/api/v1/movies")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isCreated())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.id").value(movieDto.id()))
-            .andExpect(jsonPath("$.isan").value(movieDto.isan().toString()))
-            .andExpect(jsonPath("$.title").value(movieDto.title()))
-            .andExpect(jsonPath("$.year").value(movieDto.year()));
+            // when / then
+            mockMvc.perform(post("/api/v1/movies")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(movieDto.id()))
+                .andExpect(jsonPath("$.isan").value(movieDto.isan().toString()))
+                .andExpect(jsonPath("$.title").value(movieDto.title()))
+                .andExpect(jsonPath("$.year").value(movieDto.year()));
 
-        verify(portMock).createMovie(request);
-        verifyNoMoreInteractions(portMock);
+            verify(portMock).createMovie(request);
+            verifyNoMoreInteractions(portMock);
+        }
+
+        @Test
+        void givenInvalidMovieWhenCreateMovieThenReturnBadRequest() throws Exception {
+            // given
+            MovieCreateRequest invalidRequest = MovieCreateRequest.builder().build();
+
+            // when / then
+            mockMvc.perform(post("/api/v1/movies")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+
+            verifyNoInteractions(portMock);
+        }
+
+        @Test
+        void givenValidMovieWhenUpdateMovieThenReturnOk() throws Exception {
+            // given
+            MovieId movieId = MovieId.of(15L);
+            MovieDto movieDto = createMovieBuilder().build();
+            MovieCreateRequest request = createMovieCreateRequestBuilder().build();
+
+            when(portMock.updateMovie(any(MovieId.class), any()))
+                .thenReturn(movieDto);
+
+            // when / then
+            mockMvc.perform(put("/api/v1/movies/{id}", movieId.value())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(movieDto.id()))
+                .andExpect(jsonPath("$.isan").value(movieDto.isan().toString()))
+                .andExpect(jsonPath("$.title").value(movieDto.title()))
+                .andExpect(jsonPath("$.year").value(movieDto.year()));
+
+            verify(portMock).updateMovie(movieId, request);
+            verifyNoMoreInteractions(portMock);
+        }
+
+        @Test
+        void givenNonExistingMovieWhenUpdateMovieThenReturn404() throws Exception {
+            // given
+            MovieId movieId = MovieId.of(15L);
+            MovieCreateRequest request = createMovieCreateRequestBuilder().build();
+
+            when(portMock
+                .updateMovie(any(), any()))
+                .thenThrow(new EntityNotFoundException("Movie not found"));
+
+            // when / then
+            mockMvc.perform(put("/api/v1/movies/{id}", movieId.value())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+
+            verify(portMock).updateMovie(movieId, request);
+            verifyNoMoreInteractions(portMock);
+        }
+
+        @Test
+        void givenInvalidMovieWhenUpdateMovieThenReturnBadRequest() throws Exception {
+            // given
+            MovieId movieId = MovieId.of(15L);
+            MovieCreateRequest invalidRequest = MovieCreateRequest.builder().build();
+
+            // when / then
+            mockMvc.perform(put("/api/v1/movies/{id}", movieId.value())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+
+            verifyNoInteractions(portMock);
+        }
+
+        @Test
+        void givenValidIdWhenDeleteMovieThenReturnNoContent() throws Exception {
+            // given
+            MovieId movieId = MovieId.of(15L);
+
+            doNothing().when(portMock).deleteMovie(any(MovieId.class));
+
+            // when / then
+            mockMvc.perform(delete("/api/v1/movies/{id}", movieId.value()))
+                .andExpect(status().isNoContent());
+
+            verify(portMock).deleteMovie(movieId);
+            verifyNoMoreInteractions(portMock);
+        }
+
+        @Test
+        void givenNonExistingIdWhenDeleteMovieThenReturn404() throws Exception {
+            // given
+            MovieId movieId = MovieId.of(15L);
+
+            doThrow(new EntityNotFoundException("Movie not found"))
+                .when(portMock).deleteMovie(any(MovieId.class));
+
+            // when / then
+            mockMvc.perform(delete("/api/v1/movies/{id}", movieId.value()))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+
+            verify(portMock).deleteMovie(movieId);
+            verifyNoMoreInteractions(portMock);
+        }
     }
 
-    @Test
-    void givenInvalidMovieWhenCreateMovieThenReturnBadRequest() throws Exception {
-        // given
-        MovieCreateRequest invalidRequest = MovieCreateRequest.builder().build();
+    @Nested
+    @WithMockUser(roles = "USER")
+    class MoviesRestrictedAreaAccessTest {
 
-        // when / then
-        mockMvc.perform(post("/api/v1/movies")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(invalidRequest)))
-            .andExpect(status().isBadRequest())
-            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+        @Test
+        void givenValidMovieWhenCreateMovieAsNonAdminThenExpect403() throws Exception {
+            MovieCreateRequest request = createMovieCreateRequestBuilder().build();
+            mockMvc
+                .perform(post("/api/v1/movies")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
 
-        verifyNoInteractions(portMock);
-    }
+            verifyNoInteractions(portMock);
+        }
 
-    @Test
-    void givenValidMovieWhenUpdateMovieThenReturnOk() throws Exception {
-        // given
-        MovieId movieId = MovieId.of(15L);
-        MovieDto movieDto = createMovieBuilder().build();
-        MovieCreateRequest request = createMovieCreateRequestBuilder().build();
+        @Test
+        void givenValidMovieWhenUpdateMovieAsNonAdminThenExpect403() throws Exception {
+            // given
+            MovieId movieId = MovieId.of(15L);
+            MovieCreateRequest request = createMovieCreateRequestBuilder().build();
+            mockMvc
+                .perform(put("/api/v1/movies/{id}", movieId.value())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
+            verifyNoInteractions(portMock);
+        }
 
-        when(portMock.updateMovie(any(MovieId.class), any()))
-            .thenReturn(movieDto);
+        @Test
+        void givenValidIdWhenDeleteMovieThenReturnNoContent() throws Exception {
+            MovieId movieId = MovieId.of(15L);
+            mockMvc
+                .perform(delete("/api/v1/movies/{id}", movieId.value()))
+                .andExpect(status().isForbidden());
 
-        // when / then
-        mockMvc.perform(put("/api/v1/movies/{id}", movieId.value())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.id").value(movieDto.id()))
-            .andExpect(jsonPath("$.isan").value(movieDto.isan().toString()))
-            .andExpect(jsonPath("$.title").value(movieDto.title()))
-            .andExpect(jsonPath("$.year").value(movieDto.year()));
-
-        verify(portMock).updateMovie(movieId, request);
-        verifyNoMoreInteractions(portMock);
-    }
-
-    @Test
-    void givenNonExistingMovieWhenUpdateMovieThenReturn404() throws Exception {
-        // given
-        MovieId movieId = MovieId.of(15L);
-        MovieCreateRequest request = createMovieCreateRequestBuilder().build();
-
-        when(portMock
-            .updateMovie(any(), any()))
-            .thenThrow(new EntityNotFoundException("Movie not found"));
-
-        // when / then
-        mockMvc.perform(put("/api/v1/movies/{id}", movieId.value())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isNotFound())
-            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
-
-        verify(portMock).updateMovie(movieId, request);
-        verifyNoMoreInteractions(portMock);
-    }
-
-    @Test
-    void givenInvalidMovieWhenUpdateMovieThenReturnBadRequest() throws Exception {
-        // given
-        MovieId movieId = MovieId.of(15L);
-        MovieCreateRequest invalidRequest = MovieCreateRequest.builder().build();
-
-        // when / then
-        mockMvc.perform(put("/api/v1/movies/{id}", movieId.value())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(invalidRequest)))
-            .andExpect(status().isBadRequest())
-            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
-
-        verifyNoInteractions(portMock);
-    }
-
-    @Test
-    void givenValidIdWhenDeleteMovieThenReturnNoContent() throws Exception {
-        // given
-        MovieId movieId = MovieId.of(15L);
-
-        doNothing().when(portMock).deleteMovie(any(MovieId.class));
-
-        // when / then
-        mockMvc.perform(delete("/api/v1/movies/{id}", movieId.value()))
-            .andExpect(status().isNoContent());
-
-        verify(portMock).deleteMovie(movieId);
-        verifyNoMoreInteractions(portMock);
-    }
-
-    @Test
-    void givenNonExistingIdWhenDeleteMovieThenReturn404() throws Exception {
-        // given
-        MovieId movieId = MovieId.of(15L);
-
-        doThrow(new EntityNotFoundException("Movie not found"))
-            .when(portMock).deleteMovie(any(MovieId.class));
-
-        // when / then
-        mockMvc.perform(delete("/api/v1/movies/{id}", movieId.value()))
-            .andExpect(status().isNotFound())
-            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
-
-        verify(portMock).deleteMovie(movieId);
-        verifyNoMoreInteractions(portMock);
+            verifyNoInteractions(portMock);
+        }
     }
 
     private MovieDto.MovieDtoBuilder createMovieBuilder() {

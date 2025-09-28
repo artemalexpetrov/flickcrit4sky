@@ -3,6 +3,8 @@ package com.flickcrit.app.infrastructure.api.advice;
 import com.flickcrit.app.domain.exception.EntityNotFoundException;
 import jakarta.annotation.Nonnull;
 import org.springframework.http.*;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -52,6 +54,16 @@ class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     ResponseEntity<Object> handleEntityNotFoundException(Exception e, WebRequest request) {
         return doHandleException(e, request, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    ResponseEntity<Object> handleAuthenticationExceptions(AuthenticationException e, WebRequest request) {
+        return doHandleException(e, request, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    ResponseEntity<Object> handleAuthorizationExceptions(AccessDeniedException e, WebRequest request) {
+        return doHandleException(e, request, HttpStatus.FORBIDDEN);
     }
 
     private ResponseEntity<Object> doHandleException(Exception e, WebRequest request, HttpStatus status) {

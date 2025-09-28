@@ -1,0 +1,70 @@
+### Sign-Up
+POST http://localhost:8080/api/v1/auth/sign-up
+
+### Sign-In
+POST http://localhost:8080/api/v1/auth/sign-in
+
+### Sign-Out
+POST http://localhost:8080/api/v1/auth/sign-out
+
+### Refresh token
+POST http://localhost:8080/api/v1/auth/refresh-token
+Content-Type: application/json
+
+{
+  "refreshToken": "{{ refreshToken }}"
+}
+
+
+
+
+
+
+
+
+### Fetch all movies
+GET http://localhost:8080/api/v1/movies?page=0&size=20
+
+
+
+
+### Create a movie
+POST http://localhost:8080/api/v1/movies
+Content-Type: application/json
+Authorization: Bearer {{ accessToken }}
+
+{
+  "title": "Inception",
+  "year": 2009
+}
+
+
+### Retrieve a movie identified by the given ID
+GET http://localhost:8080/api/v1/movies/{{id}}
+
+### Update a movie identified by the given ID
+PUT http://localhost:8080/api/v1/movies/2
+Content-Type: application/json
+Authorization: Bearer {{ accessToken }}
+
+{
+  "title": "Inception 2",
+  "year": 2011
+}
+
+### Delete a movie identified by the given ID
+DELETE http://localhost:8080/api/v1/movies/{{id}}
+
+
+### Admin: Retrieve a list of registered users
+GET http://localhost:8080/api/v1/users?page=0&size=20
+Authorization: Bearer {{ accessToken }}
+
+### Admin: Retrieve a user identified by the given ID
+GET http://localhost:8080/api/v1/users/{{id}}
+Authorization: Bearer {{ accessToken }}
+
+### Admin: Delete a user identified by the given ID
+DELETE http://localhost:8080/api/v1/users/{{id}}
+Authorization: Bearer {{ accessToken }}
+
