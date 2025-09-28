@@ -4,7 +4,9 @@ import com.flickcrit.app.domain.model.movie.MovieId;
 import com.flickcrit.app.infrastructure.api.model.common.PageResponse;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieCreateRequest;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieDto;
+import com.flickcrit.app.infrastructure.api.model.rating.RatedMovieDto;
 import com.flickcrit.app.infrastructure.api.port.MoviePort;
+import com.flickcrit.app.infrastructure.api.port.TopRatingPort;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,8 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -21,10 +25,16 @@ import org.springframework.web.bind.annotation.*;
 public class MovieControllerV1 {
 
     private final MoviePort port;
+    private final TopRatingPort topRatedMoviesPort;
 
     @GetMapping
     PageResponse<MovieDto> getMovies(@Valid Pageable pagingRequest) {
         return port.getMovies(pagingRequest);
+    }
+
+    @GetMapping("/top")
+    List<RatedMovieDto> getTopRatedMovies() {
+        return topRatedMoviesPort.getTopRatedMovies();
     }
 
     @GetMapping("/{id:\\d+}")

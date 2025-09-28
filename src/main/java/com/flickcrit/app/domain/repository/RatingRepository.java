@@ -2,15 +2,29 @@ package com.flickcrit.app.domain.repository;
 
 import com.flickcrit.app.domain.model.movie.MovieId;
 import com.flickcrit.app.domain.model.rating.AverageRating;
+import com.flickcrit.app.domain.model.rating.RatedMovieId;
 import com.flickcrit.app.domain.model.rating.Rating;
 import com.flickcrit.app.domain.model.user.UserId;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Interface for managing Rating entities in a data repository.
  */
 public interface RatingRepository {
+
+    /**
+     * Retrieves a list of top-rated movies, sorted by their average ratings in descending order.
+     * The number of movies to be returned is specified by the input parameter.
+     * If the repository does not contain enough movies, the returned list will contain
+     * fewer elements, potentially empty, but will maintain the order of highest to lowest rating.
+     *
+     * @param n the maximum number of top-rated movies to return; must be a positive integer
+     * @return a list of {@code RatedMovieId} objects representing the top-rated movies and their respective average ratings,
+     *         or an empty list if no movies are available
+     */
+    List<RatedMovieId> getTopRatedMovies(int n);
 
     /**
      * Retrieves the average rating for a specific movie based on user ratings.

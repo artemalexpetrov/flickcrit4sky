@@ -5,6 +5,8 @@ import com.flickcrit.app.domain.model.movie.MovieId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,6 +14,16 @@ import java.util.Optional;
  * Provides methods for CRUD operations and retrieval of movies.
  */
 public interface MovieRepository {
+
+    /**
+     * Retrieves a list of movies identified by their unique identifiers.
+     * If no matching movies are found for the provided identifiers,
+     * the returned list will be empty.
+     *
+     * @param movieIds a collection of unique identifiers representing the movies to retrieve; must not be null
+     * @return a list of Movie objects corresponding to the provided identifiers, or an empty list if no matches are found
+     */
+    List<Movie> findByIds(Collection<MovieId> movieIds);
 
     /**
      * Retrieves a movie by its unique identifier.

@@ -2,8 +2,6 @@ package com.flickcrit.app.infrastructure.persistence.repository;
 
 import com.flickcrit.app.domain.model.movie.Movie;
 import com.flickcrit.app.domain.model.movie.MovieId;
-import com.flickcrit.app.domain.model.rating.Rating;
-import com.flickcrit.app.domain.model.rating.RatingId;
 import com.flickcrit.app.infrastructure.persistence.model.MovieEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +32,33 @@ class MovieRepositoryImplTest {
 
     @InjectMocks
     private MovieRepositoryImpl movieRepository;
+
+    @Test
+    void findByIdsWhenMoviesExistReturnsMovies() {
+        // given
+        List<Long> rawIds = List.of(10L);
+        List<MovieId> moviesIds = List.of(MovieId.of(10L));
+
+        MovieEntity movieEntity = mock(MovieEntity.class);
+        Movie expectedMovie = mock(Movie.class);
+
+        when(jpaRepositoryMock
+            .findAllById(anyCollection()))
+            .thenReturn(List.of(movieEntity));
+
+        when(converterMock
+            .convert(any(), eq(Movie.class)))
+            .thenReturn(expectedMovie);
+
+        // when
+        List<Movie> result = movieRepository.findByIds(moviesIds);
+
+        // then
+        assertThat(result).containsExactly(expectedMovie);
+        verify(jpaRepositoryMock).findAllById(rawIds);
+        verify(converterMock).convert(movieEntity, Movie.class);
+        verifyNoMoreInteractions(jpaRepositoryMock, converterMock);
+    }
 
     @Test
     void findByIdWhenMovieExistsReturnsMovie() {

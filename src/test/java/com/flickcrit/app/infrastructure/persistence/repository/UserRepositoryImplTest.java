@@ -1,7 +1,5 @@
 package com.flickcrit.app.infrastructure.persistence.repository;
 
-import com.flickcrit.app.domain.model.movie.Movie;
-import com.flickcrit.app.domain.model.movie.MovieId;
 import com.flickcrit.app.domain.model.user.Email;
 import com.flickcrit.app.domain.model.user.User;
 import com.flickcrit.app.domain.model.user.UserId;

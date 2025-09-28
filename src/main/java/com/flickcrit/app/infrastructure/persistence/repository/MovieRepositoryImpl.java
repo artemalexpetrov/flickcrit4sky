@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -20,6 +22,14 @@ class MovieRepositoryImpl implements MovieRepository {
 
     private final JpaMovieRepository jpaRepository;
     private final ConversionService converter;
+
+    @Override
+    public List<Movie> findByIds(Collection<MovieId> movieIds) {
+        List<Long> rawMovieIds = movieIds.stream().map(MovieId::value).toList();
+        return jpaRepository.findByIdIn(rawMovieIds).stream()
+            .map(this::convertToDomain)
+            .toList();
+    }
 
     @Override
     public Optional<Movie> findById(@NonNull MovieId id) {

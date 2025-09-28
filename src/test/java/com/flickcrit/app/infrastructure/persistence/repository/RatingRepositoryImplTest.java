@@ -2,9 +2,11 @@ package com.flickcrit.app.infrastructure.persistence.repository;
 
 import com.flickcrit.app.domain.model.movie.MovieId;
 import com.flickcrit.app.domain.model.rating.AverageRating;
+import com.flickcrit.app.domain.model.rating.RatedMovieId;
 import com.flickcrit.app.domain.model.rating.Rating;
 import com.flickcrit.app.domain.model.rating.RatingId;
 import com.flickcrit.app.domain.model.user.UserId;
+import com.flickcrit.app.infrastructure.persistence.model.RatedMovieProjection;
 import com.flickcrit.app.infrastructure.persistence.model.RatingEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,10 +15,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -31,6 +34,57 @@ class RatingRepositoryImplTest {
 
     @InjectMocks
     private RatingRepositoryImpl repository;
+
+    @Test
+    void givenTopRatedMoviesWhenGetTopRatedMoviesExpectConvertedList() {
+        // given
+        int limit = 10;
+        RatedMovieProjection projection = mock(RatedMovieProjection.class);
+        RatedMovieId expectedMovieId = mock(RatedMovieId.class);
+
+        when(jpaRepository
+            .getTopRatedMovies(any()))
+            .thenReturn(List.of(projection));
+
+        when(converterMock
+            .convert(any(), eq(RatedMovieId.class)))
+            .thenReturn(expectedMovieId);
+
+        // when
+        List<RatedMovieId> result = repository.getTopRatedMovies(limit);
+
+        // then
+        assertThat(result).containsExactly(expectedMovieId);
+        verify(jpaRepository).getTopRatedMovies(limit);
+        verify(converterMock).convert(projection, RatedMovieId.class);
+        verifyNoMoreInteractions(jpaRepository, converterMock);
+    }
+
+    @Test
+    void givenNoTopRatedMoviesWhenGetTopRatedMoviesExpectEmptyList() {
+        // given
+        int limit = 10;
+        when(jpaRepository
+            .getTopRatedMovies(any()))
+            .thenReturn(List.of());
+
+        // when
+        List<RatedMovieId> result = repository.getTopRatedMovies(limit);
+
+        // then
+        assertThat(result).isEmpty();
+        verify(jpaRepository).getTopRatedMovies(limit);
+        verifyNoMoreInteractions(jpaRepository);
+        verifyNoInteractions(converterMock);
+    }
+
+    @Test
+    void givenInvalidLimitWhenGetTopRatedMoviesExpectException() {
+        assertThrows(IllegalArgumentException.class, () -> repository.getTopRatedMovies(0));
+        assertThrows(IllegalArgumentException.class, () -> repository.getTopRatedMovies(-1));
+        verifyNoInteractions(jpaRepository, converterMock);
+    }
+
 
     @Test
     void givenAverageMovieRatingWhenGetMovieRatingExpectAverageMovieRating() {

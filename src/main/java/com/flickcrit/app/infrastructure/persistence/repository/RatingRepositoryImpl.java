@@ -3,15 +3,18 @@ package com.flickcrit.app.infrastructure.persistence.repository;
 import com.flickcrit.app.domain.model.common.EntityId;
 import com.flickcrit.app.domain.model.movie.MovieId;
 import com.flickcrit.app.domain.model.rating.AverageRating;
+import com.flickcrit.app.domain.model.rating.RatedMovieId;
 import com.flickcrit.app.domain.model.rating.Rating;
 import com.flickcrit.app.domain.model.user.UserId;
 import com.flickcrit.app.domain.repository.RatingRepository;
+import com.flickcrit.app.infrastructure.persistence.model.RatedMovieProjection;
 import com.flickcrit.app.infrastructure.persistence.model.RatingEntity;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -20,6 +23,14 @@ class RatingRepositoryImpl implements RatingRepository {
 
     private final JpaRatingRepository jpaRepository;
     private final ConversionService converter;
+
+    @Override
+    public List<RatedMovieId> getTopRatedMovies(int n) {
+        List<RatedMovieProjection> projections = jpaRepository.getTopRatedMovies(n);
+        return projections.stream()
+            .map(this::convertMovieRatingProjection)
+            .toList();
+    }
 
     @Override
     public Optional<AverageRating> getMovieRating(MovieId movieId) {
@@ -45,6 +56,10 @@ class RatingRepositoryImpl implements RatingRepository {
         Optional.ofNullable(rating.getId())
             .map(EntityId::value)
             .ifPresent(jpaRepository::deleteById);
+    }
+
+    private RatedMovieId convertMovieRatingProjection(RatedMovieProjection projection) {
+        return converter.convert(projection, RatedMovieId.class);
     }
 
     private Rating convertToDomain(RatingEntity entity) {
