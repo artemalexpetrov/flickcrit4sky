@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,10 +41,10 @@ class RatingRepositoryImplTest {
         // given
         int limit = 10;
         RatedMovieProjection projection = mock(RatedMovieProjection.class);
-        RatedMovieId expectedMovieId = mock(RatedMovieId.class);
+        RatedMovieId expectedMovieId = new RatedMovieId(MovieId.of(10L), AverageRating.of(BigDecimal.ONE, 2));
 
         when(jpaRepository
-            .getTopRatedMovies(any()))
+            .getTopRatedMovies(anyInt()))
             .thenReturn(List.of(projection));
 
         when(converterMock
@@ -65,7 +66,7 @@ class RatingRepositoryImplTest {
         // given
         int limit = 10;
         when(jpaRepository
-            .getTopRatedMovies(any()))
+            .getTopRatedMovies(anyInt()))
             .thenReturn(List.of());
 
         // when
@@ -85,14 +86,13 @@ class RatingRepositoryImplTest {
         verifyNoInteractions(jpaRepository, converterMock);
     }
 
-
     @Test
     void givenAverageMovieRatingWhenGetMovieRatingExpectAverageMovieRating() {
         // given
         MovieId movieId = MovieId.of(15L);
         AverageRating rating = AverageRating.zero();
         when(jpaRepository
-            .getAverageRating(any()))
+            .getAverageRating(anyLong()))
             .thenReturn(Optional.of(rating));
 
         // when
@@ -110,7 +110,7 @@ class RatingRepositoryImplTest {
         MovieId movieId = MovieId.of(15L);
 
         when(jpaRepository
-            .getAverageRating(any()))
+            .getAverageRating(anyLong()))
             .thenReturn(Optional.empty());
 
         // when

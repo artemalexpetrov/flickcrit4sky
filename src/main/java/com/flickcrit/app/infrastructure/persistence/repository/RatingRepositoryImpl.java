@@ -21,11 +21,17 @@ import java.util.Optional;
 @RequiredArgsConstructor
 class RatingRepositoryImpl implements RatingRepository {
 
+    private static final int MAX_TOP_RATED_MOVIES_LIMIT = 100;
+
     private final JpaRatingRepository jpaRepository;
     private final ConversionService converter;
 
     @Override
     public List<RatedMovieId> getTopRatedMovies(int n) {
+        if (n <= 0 || n > MAX_TOP_RATED_MOVIES_LIMIT) {
+           throw new IllegalArgumentException("Limit must be between 1 and " + MAX_TOP_RATED_MOVIES_LIMIT);
+        }
+
         List<RatedMovieProjection> projections = jpaRepository.getTopRatedMovies(n);
         return projections.stream()
             .map(this::convertMovieRatingProjection)

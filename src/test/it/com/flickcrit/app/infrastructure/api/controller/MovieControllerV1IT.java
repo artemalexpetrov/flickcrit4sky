@@ -6,6 +6,7 @@ import com.flickcrit.app.infrastructure.api.model.common.PageResponse;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieCreateRequest;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieDto;
 import com.flickcrit.app.infrastructure.api.port.MoviePort;
+import com.flickcrit.app.infrastructure.api.port.TopRatingPort;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -27,6 +28,9 @@ public class MovieControllerV1IT extends BaseControllerIT {
 
     @MockitoBean
     private MoviePort portMock;
+
+    @MockitoBean
+    private TopRatingPort topRatingPort;
 
     @Test
     void whenGetMoviesExpectMoviesPage() throws Exception {

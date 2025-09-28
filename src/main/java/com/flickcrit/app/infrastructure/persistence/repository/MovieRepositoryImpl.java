@@ -26,7 +26,7 @@ class MovieRepositoryImpl implements MovieRepository {
     @Override
     public List<Movie> findByIds(Collection<MovieId> movieIds) {
         List<Long> rawMovieIds = movieIds.stream().map(MovieId::value).toList();
-        return jpaRepository.findByIdIn(rawMovieIds).stream()
+        return jpaRepository.findAllById(rawMovieIds).stream()
             .map(this::convertToDomain)
             .toList();
     }
