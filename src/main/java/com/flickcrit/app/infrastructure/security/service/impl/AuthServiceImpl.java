@@ -42,6 +42,10 @@ class AuthServiceImpl implements AuthService {
 
     @Override
     public String encodePassword(String password) {
+        if (password == null || password.isBlank()) {
+            throw new IllegalArgumentException("Password cannot be blank");
+        }
+
         return passwordEncoder.encode(password);
     }
 

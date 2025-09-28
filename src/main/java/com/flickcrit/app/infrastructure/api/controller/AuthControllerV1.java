@@ -7,12 +7,9 @@ import com.flickcrit.app.infrastructure.api.port.AuthPort;
 import com.flickcrit.app.infrastructure.security.service.TokenPair;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Validated
 @RestController
@@ -23,9 +20,9 @@ public class AuthControllerV1 {
     private final AuthPort authPort;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequestDto signUpRequest) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public void signUp(@Valid @RequestBody SignUpRequestDto signUpRequest) {
         authPort.signUp(signUpRequest);
-        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/sign-in")
