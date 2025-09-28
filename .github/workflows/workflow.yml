@@ -1,0 +1,33 @@
+name: Project Build
+
+on:
+  push:
+    branches:
+      - "*"
+
+jobs:
+  build:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5.0.0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build
+        run: ./gradlew build
+
+      - name: Run Tests
+        run: ./gradlew test
+
+      - name: Run Integration Tests
+        run: ./gradlew integrationTest --info
