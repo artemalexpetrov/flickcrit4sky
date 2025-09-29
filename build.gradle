@@ -36,6 +36,7 @@ ext {
     hypersistanceUtilsVersion = '3.11.0'
     jjwtVersion = '0.13.0'
     passayVersion = '1.6.6'
+    springDocVersion = '2.8.13'
 }
 
 dependencies {
@@ -49,6 +50,8 @@ dependencies {
     implementation "org.mapstruct.extensions.spring:mapstruct-spring-annotations:${mapstructSpringExtensionsVersion}"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
     implementation "io.hypersistence:hypersistence-utils-hibernate-63:${hypersistanceUtilsVersion}"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-api:${springDocVersion}"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}"
     implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
     implementation "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
     implementation "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"

@@ -8,6 +8,11 @@ import com.flickcrit.app.infrastructure.api.model.rating.AverageRatingDto;
 import com.flickcrit.app.infrastructure.api.model.rating.RateMovieRequest;
 import com.flickcrit.app.infrastructure.api.model.rating.UserMovieRatingDto;
 import com.flickcrit.app.infrastructure.api.port.RatingPort;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,29 +24,47 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/movies/{movieId:\\d+}/rating")
+@Tag(name = "Movie Ratings", description = "Endpoints for managing movie ratings")
 public class MovieRatingControllerV1 {
 
     private final RatingPort ratingPort;
     private final UserService userService;
 
+    @Operation(
+        summary = "Get movie rating",
+        description = "Retrieves the average rating for a movie")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved movie rating")
+    @ApiResponse(responseCode = "404", description = "Movie not found")
     @GetMapping
-    AverageRatingDto getRating(@PathVariable MovieId movieId) {
+    AverageRatingDto getRating(@Parameter(description = "ID of the movie") @PathVariable MovieId movieId) {
         return ratingPort.getMovieRating(movieId);
     }
 
+    @Operation(summary = "Rate a movie", description = "Submit a rating for a movie")
+    @ApiResponse(responseCode = "200", description = "Successfully rated the movie")
+    @ApiResponse(responseCode = "404", description = "Movie not found")
+    @ApiResponse(responseCode = "401", description = "Unauthorized")
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping
     UserMovieRatingDto rateMovie(
-        @AuthenticationPrincipal String username,
-        @PathVariable MovieId movieId,
+        @Parameter(hidden = true) @AuthenticationPrincipal String username,
+        @Parameter(description = "ID of the movie") @PathVariable MovieId movieId,
         @Valid @RequestBody RateMovieRequest request) {
 
         User user = loadUser(username);
         return ratingPort.rateMovie(user.getId(), movieId, request);
     }
 
+    @Operation(summary = "Delete movie rating", description = "Remove user's rating for a movie")
+    @ApiResponse(responseCode = "204", description = "Rating successfully deleted")
+    @ApiResponse(responseCode = "404", description = "Movie not found")
+    @ApiResponse(responseCode = "401", description = "Unauthorized")
+    @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteRating(@AuthenticationPrincipal String username, @PathVariable MovieId movieId) {
+    void deleteRating(
+        @Parameter(hidden = true) @AuthenticationPrincipal String username,
+        @Parameter(description = "ID of the movie") @PathVariable MovieId movieId) {
         User user = loadUser(username);
         ratingPort.deleteRating(user.getId(), movieId);
     }

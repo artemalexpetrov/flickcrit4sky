@@ -71,6 +71,8 @@ public class SecurityConfig {
             .httpBasic(AbstractHttpConfigurer::disable)
             .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                .requestMatchers(HttpMethod.GET, "/docs/**").permitAll()
+
                 .requestMatchers(HttpMethod.GET,
                     "/actuator/prometheus",
                     "/actuator/metrics",
