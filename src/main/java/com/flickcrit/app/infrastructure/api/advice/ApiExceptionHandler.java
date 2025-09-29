@@ -66,6 +66,15 @@ class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return doHandleException(e, request, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(Exception.class)
+    ResponseEntity<Object> handleGlobalException(Exception e, WebRequest request) {
+        ProblemDetail detail = ErrorResponse
+            .builder(e, HttpStatus.INTERNAL_SERVER_ERROR, "").build()
+            .updateAndGetBody(this.getMessageSource(), request.getLocale());
+
+        return handleExceptionInternal(e, detail, HttpHeaders.EMPTY, HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
+
     private ResponseEntity<Object> doHandleException(Exception e, WebRequest request, HttpStatus status) {
         ProblemDetail detail = buildProblemDetail(request, e, status);
         return handleExceptionInternal(e, detail, HttpHeaders.EMPTY, status, request);
