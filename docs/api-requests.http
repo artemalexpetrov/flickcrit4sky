@@ -3,6 +3,12 @@
 # ---------------------------------------------------------------------------------------------------
 ### Sign-In
 POST http://localhost:8080/api/v1/auth/sign-in
+Content-Type: application/json
+
+{
+  "email": "artemalexpetrov@gmail.com",
+  "password": "passw0rd"
+}
 
 ### Refresh token
 POST http://localhost:8080/api/v1/auth/refresh-token
@@ -15,8 +21,16 @@ Content-Type: application/json
 
 ### Sign-Up
 POST http://localhost:8080/api/v1/auth/sign-up
+Content-Type: application/json
+
+{
+  "email": "artemalexpetrov@gmail.com",
+  "password": "passw0rd",
+  "passwordRepeat": "passw0rd"
+}
 
 
+###
 // ---------------------------------------------------------------------------------------------------
 // Movies
 // ---------------------------------------------------------------------------------------------------

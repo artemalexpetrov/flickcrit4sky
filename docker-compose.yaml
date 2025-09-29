@@ -1,37 +1,40 @@
-networks:
-  flickcrit-network:
-    name: flickcrit-network
-    labels:
-      env: "development"
-      project: "flickcrit"
-
-volumes:
-  db_postgres:
+# Application infrastructure
+include:
+  - infra/docker-compose-db.yaml
+  - infra/docker-compose-elk.yaml
+  - infra/docker-compose-grafana.yaml
 
 services:
-  database:
-    image: postgres:17-alpine
+  # ===============================================================================================
+  # Application Service
+  # ===============================================================================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      tags:
+        - ${COMPOSE_PROJECT_NAME}:latest
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
-      interval: 2s
-      retries: 20
-      start_period: 20s
-      timeout: 10s
-
-    networks:
-      - default
-      - flickcrit-network
-
-    ports:
-      - "5432:5432"
-
+      DB_HOST: database
+      DB_PORT: ${POSTGRES_PORT}
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET}
+      LOGGING_FILE_NAME: logs/app.log
+      LOGGING_LEVEL_ROOT: INFO
+    links:
+      - database
     volumes:
-      - db_postgres:/var/lib/postgresql/data
-
-
-
+      - elasticsearch_logs:/app/logs
+    ports:
+      - "8080:8080"
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: "curl --fail --silent localhost:8888/actuator/health | grep UP || exit 1"
+      interval: 5s
+      timeout: 2s
+      retries: 5
+      start_period: 40s

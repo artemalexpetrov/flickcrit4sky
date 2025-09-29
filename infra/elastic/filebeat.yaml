@@ -1,0 +1,28 @@
+filebeat.inputs:
+  - id: app-logs-filestream
+    type: filestream
+    tags: ["app-logs"]
+    paths:
+      - /logs/*.log
+    parsers:
+      - ndjson:
+          message_key: message
+          add_error_key: true
+          target: ""
+
+setup.template.name: "filebeat"
+setup.template.pattern: "filebeat-*"
+
+output.elasticsearch:
+  hosts: '${ELASTIC_HOSTS}'
+  index: "app-logs-%{+yyyy.MM.dd}"
+  ssl.key: /usr/share/elasticsearch/config/certs/elasticsearch01/elasticsearch01.key
+  ssl.certificate: /usr/share/elasticsearch/config/certs/elasticsearch01/elasticsearch01.crt
+  ssl.certificate_authorities: /usr/share/elasticsearch/config/certs/ca/ca.crt
+  username: '${ELASTIC_USER}'
+  password: '${ELASTIC_PASSWORD}'
+
+setup.kibana:
+  host: 'http://${KIBANA_HOST}:${KIBANA_PORT}'
+  username: '${KIBANA_USER}'
+  password: '${KIBANA_PASSWORD}'

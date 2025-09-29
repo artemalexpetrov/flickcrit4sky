@@ -1,0 +1,3 @@
+# Application infrastructure
+include:
+  - infra/docker-compose-db.yaml

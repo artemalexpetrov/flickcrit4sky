@@ -1,0 +1,28 @@
+services:
+  # ===============================================================================================
+  # Prometheus
+  # ===============================================================================================
+  prometheus:
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+      - '--web.config.file=/etc/prometheus/web.yaml'
+    volumes:
+      - ./grafana/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - ./grafana/prometheus_web.yaml:/etc/prometheus/web.yaml
+    ports:
+      - "${PROMETHEUS_PORT}:9090"
+
+  # ===============================================================================================
+  # Grafana
+  # ===============================================================================================
+  grafana:
+    image: grafana/grafana
+    restart: unless-stopped
+    volumes:
+      - ./grafana/grafana_connection_provision.yaml:/etc/grafana/provisioning/datasources/provision.yaml
+      - ./grafana/grafana_dashboard_provision.yaml:/etc/grafana/provisioning/dashboards/provision.yaml
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    ports:
+      - '${GRAFANA_PORT}:3000'
