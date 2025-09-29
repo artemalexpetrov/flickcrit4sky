@@ -27,7 +27,7 @@ where users rate movies.
    ```
 3) Navigate to `http://localhost:8080`
 
-4) Access the API ([Swagger](http://127.0.0.1:8080/docs/swagger-ui/index.html), Postman, http.requests)
+4) Access the API ([Swagger](http://127.0.0.1:8080/docs/swagger-ui/index.html), [Postman](./docs/flickcrit.postman_collection.json), http.requests)
 
 5) Troubleshooting: ensure there are no port conflicts (adjust env file)
 
