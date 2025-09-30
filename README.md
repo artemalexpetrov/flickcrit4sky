@@ -1,3 +1,5 @@
+![JaCoCo Coverage](./.github/badges/jacoco.svg)
+
 Flick Critique
 ==============
 
