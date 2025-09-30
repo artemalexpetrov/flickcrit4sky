@@ -8,11 +8,13 @@ import com.flickcrit.app.domain.repository.UserRepository;
 import com.flickcrit.app.domain.service.UserService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -23,6 +25,7 @@ class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User createUser(Email email, String password) {
+        log.info("Creating a new user with email {}", email);
         User user = new User(email, password);
         return repository.save(user);
     }
@@ -55,6 +58,7 @@ class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void delete(@NonNull User user) {
+        log.info("Deleting a user with ID {}", user.getId());
         repository.delete(user);
     }
 }

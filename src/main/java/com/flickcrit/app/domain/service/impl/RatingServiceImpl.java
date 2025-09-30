@@ -8,11 +8,13 @@ import com.flickcrit.app.domain.repository.RatingRepository;
 import com.flickcrit.app.domain.service.RatingService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 class RatingServiceImpl implements RatingService {

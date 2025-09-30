@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +22,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 class TokenAuthenticationFilter extends OncePerRequestFilter implements AuthenticationFilter {
@@ -48,6 +50,7 @@ class TokenAuthenticationFilter extends OncePerRequestFilter implements Authenti
         String token = authenticationHeader.substring(TOKEN_PREFIX_LENGTH);
         try {
             authenticateToken(request, token);
+            log.debug("User {} authenticated with a token", SecurityContextHolder.getContext().getAuthentication().getName());
             filterChain.doFilter(request, response);
         } catch (AuthenticationException e) {
             exceptionResolver.resolveException(request, response, null, e);

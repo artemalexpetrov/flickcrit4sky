@@ -5,6 +5,7 @@ import com.flickcrit.app.infrastructure.security.service.Token;
 import com.flickcrit.app.infrastructure.security.service.TokenPair;
 import com.flickcrit.app.infrastructure.security.service.TokenService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 class AuthServiceImpl implements AuthService {
@@ -26,6 +28,7 @@ class AuthServiceImpl implements AuthService {
     @Override
     public TokenPair authenticate(String username, String password) {
         UserDetails userDetails = doAuthenticate(username, password);
+        log.info("User {} is authenticated with a password", userDetails.getUsername());
         return tokenService.issueToken(userDetails);
     }
 
@@ -33,7 +36,7 @@ class AuthServiceImpl implements AuthService {
     public TokenPair refreshToken(String refreshToken) {
         Token token = tokenService.parseToken(refreshToken);
         if (token == null || token.isExpired()) {
-            throw new BadCredentialsException("Token expired");
+            throw new BadCredentialsException("Authentication token is expired or invalid");
         }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(token.getUsername());

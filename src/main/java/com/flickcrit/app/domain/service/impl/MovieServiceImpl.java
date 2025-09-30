@@ -36,12 +36,14 @@ class MovieServiceImpl implements MovieService {
     @Override
     @Transactional
     public Movie save(@NonNull Movie movie) {
+        log.info("Saving a movie with ID {}", movie.getId());
         return repository.save(movie);
     }
 
     @Override
     @Transactional
     public void delete(@NonNull Movie movie) {
+        log.info("Deleting a movie with ID {}", movie.getId());
         repository.delete(movie);
     }
 }
