@@ -43,6 +43,20 @@ Build and test the application using Gradle
 
 To run the application manually (e.g. with `java -jar ...`) you have to provide mandatory configuration parameters:
 
+---
+# Data Ingestion
+
+The application automatically imports initial data when the `data-boostrap` profile is enabled (by default, it is included in
+the Docker stack).
+The imported dataset includes 16 users, 152 movies, and random ratings from each user to each movie.
+
+Here are credentials for the default users:
+
+| Email               | Password      | Role  |
+|---------------------|---------------|-------|
+| admin@flickcrit.com | administrat0r | ADMIN |
+| user1@flickcrit.com | user1         | USER  |
+| user2@flickcrit.com | user2         | USER  |
 
 
 ---

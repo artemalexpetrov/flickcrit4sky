@@ -21,8 +21,7 @@ services:
       DB_PASSWORD: ${POSTGRES_PASSWORD}
       DB_NAME: ${POSTGRES_DB}
       JWT_SECRET: ${JWT_SECRET}
-      LOGGING_FILE_NAME: logs/app.log
-      LOGGING_LEVEL_ROOT: INFO
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
     links:
       - database
     volumes:
