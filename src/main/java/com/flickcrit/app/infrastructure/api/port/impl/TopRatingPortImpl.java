@@ -32,8 +32,11 @@ public class TopRatingPortImpl implements TopRatingPort {
     @Transactional
     public List<RatedMovieDto> getTopRatedMovies() {
         List<RatedMovieId> moviesIds = getTopRatedMovieIds();
-        Map<MovieId, Movie> moviesById = getMoviesById(moviesIds);
+        if (moviesIds.isEmpty()) {
+            return List.of();
+        }
 
+        Map<MovieId, Movie> moviesById = getMoviesById(moviesIds);
         return zipWithRating(moviesIds, moviesById);
     }
 

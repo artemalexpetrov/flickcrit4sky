@@ -69,6 +69,11 @@ class UserPortImplTest {
     }
 
     @Test
+    void givenNullablePageRequestWhenGetUsersExpectException() {
+        assertThrows(IllegalArgumentException.class, () -> userPort.getUsers(null));
+    }
+
+    @Test
     void givenUserWhenGetUserExpectUserDto() {
         // given
         UserId userId = UserId.of(15L);
@@ -109,6 +114,11 @@ class UserPortImplTest {
     }
 
     @Test
+    void givenNullableUserIdWhenGetUserExpectException() {
+        assertThrows(IllegalArgumentException.class, () -> userPort.getUser(null));
+    }
+
+    @Test
     void givenExistingUserWhenDeleteUserExpectSuccessfulDeletion() {
         // given
         UserId userId = UserId.of(1L);
@@ -142,5 +152,10 @@ class UserPortImplTest {
         verify(userServiceMock).getUser(userId);
         verifyNoMoreInteractions(userServiceMock);
         verifyNoInteractions(converterMock);
+    }
+
+    @Test
+    void givenNullableUserIdWhenDeleteUserExpectException() {
+        assertThrows(IllegalArgumentException.class, () -> userPort.deleteUser(null));
     }
 }

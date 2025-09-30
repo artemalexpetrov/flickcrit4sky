@@ -70,6 +70,11 @@ class MoviePortImplTest {
     }
 
     @Test
+    void givenNullablePageRequestWhenGetMoviesExpectException() {
+        assertThrows(IllegalArgumentException.class, () -> moviePort.getMovies(null));
+    }
+
+    @Test
     void givenMovieWhenGetMovieExpectMovieDto() {
         // given
         MovieId movieId = MovieId.of(15L);
@@ -106,6 +111,11 @@ class MoviePortImplTest {
         verify(movieServiceMock).getMovie(movieId);
         verifyNoMoreInteractions(movieServiceMock);
         verifyNoInteractions(converterMock);
+    }
+
+    @Test
+    void givenNullableMovieIdWhenGetMovieExpectException() {
+        assertThrows(IllegalArgumentException.class, () -> moviePort.getMovie(null));
     }
 
     @Test

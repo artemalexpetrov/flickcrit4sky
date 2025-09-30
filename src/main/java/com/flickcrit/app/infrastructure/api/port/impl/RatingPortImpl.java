@@ -26,7 +26,7 @@ class RatingPortImpl implements RatingPort {
     private final ConversionService converter;
 
     @Override
-    public AverageRatingDto getMovieRating(MovieId movieId) {
+    public AverageRatingDto getMovieRating(@NonNull MovieId movieId) {
         Movie movie = getMovieOrThrow(movieId);
         AverageRating movieRating = ratingService.getMovieRating(movie.getId());
         return convertToAverageRatingDto(movieRating);
@@ -34,15 +34,16 @@ class RatingPortImpl implements RatingPort {
 
     @Override
     public UserMovieRatingDto rateMovie(@NonNull UserId userId, @NonNull MovieId movieId, @NonNull RateMovieRequest rateRequest) {
+        RatingValue ratingValue = RatingValue.of(rateRequest.rating());
         Movie movie = getMovieOrThrow(movieId);
-        Rating rating = new Rating(userId, movie.getId(), RatingValue.of(rateRequest.rating()));
+        Rating rating = new Rating(userId, movie.getId(), ratingValue);
         Rating updatedRating = ratingService.saveRating(rating);
 
         return convertToUserRateDto(updatedRating);
     }
 
     @Override
-    public void deleteRating(UserId userId, MovieId movieId) {
+    public void deleteRating(@NonNull UserId userId, @NonNull MovieId movieId) {
         ratingService
             .findRating(userId, movieId)
             .ifPresent(ratingService::deleteRating);

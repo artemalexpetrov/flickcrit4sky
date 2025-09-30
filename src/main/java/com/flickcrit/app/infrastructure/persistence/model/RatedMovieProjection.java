@@ -22,8 +22,7 @@ public record RatedMovieProjection(Long movieId, BigDecimal rating, Long ratesCo
     public static final int DEFAULT_RATING_SCALE = 1;
 
     public RatedMovieProjection {
-        rating  = rating != null
-            ? rating.setScale(DEFAULT_RATING_SCALE, RoundingMode.HALF_UP)
-            : BigDecimal.ZERO;
+        rating  = (rating != null ? rating : BigDecimal.ZERO)
+            .setScale(DEFAULT_RATING_SCALE, RoundingMode.HALF_UP);
     }
 }
