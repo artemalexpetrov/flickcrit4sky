@@ -14,6 +14,12 @@ public class PasswordChangeRequestConstraintValidator
             return true;
         }
 
-        return Objects.equals(value.getNewPassword(), value.getNewPasswordRepeat());
+        boolean passwordsEquals = Objects.equals(value.getNewPassword(), value.getNewPasswordRepeat());
+        if (!passwordsEquals) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate("Passwords do not match").addConstraintViolation();
+        }
+
+        return passwordsEquals;
     }
 }
