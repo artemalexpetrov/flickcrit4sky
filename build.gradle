@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'jacoco'
     id 'org.springframework.boot' version '3.5.6'
     id 'io.spring.dependency-management' version '1.1.7'
 }
@@ -87,12 +88,13 @@ sourceSets {
     }
 }
 
-test {
-    testLogging.showStandardStreams = true
-}
 
-tasks.named('test') {
+test {
     useJUnitPlatform()
+    testLogging.showStandardStreams = true
+    jacoco {
+        destinationFile = layout.buildDirectory.file("jacoco/${name}.exec").get().asFile
+    }
 }
 
 tasks.register('integrationTest', Test) {
@@ -105,7 +107,23 @@ tasks.register('integrationTest', Test) {
             includeTestsMatching '*IT'
         }
     }
+    jacoco {
+        destinationFile = layout.buildDirectory.file("jacoco/${name}.exec").get().asFile
+    }
+}
 
+
+tasks.register('jacocoMergedReport', JacocoReport) {
+    group = 'verification'
+    executionData files(
+      layout.buildDirectory.file("jacoco/test.exec").get().asFile,
+      layout.buildDirectory.file("jacoco/integrationTest.exec").get().asFile
+    )
+    sourceSets sourceSets.main
+    reports {
+        xml.required = true
+        csv.required = true
+    }
 }
 
 check.dependsOn integrationTest
