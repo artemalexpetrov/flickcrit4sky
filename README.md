@@ -27,7 +27,9 @@ where users rate movies.
    ```
 3) Navigate to `http://localhost:8080`
 
-4) Access the API ([Swagger](http://127.0.0.1:8080/docs/swagger-ui/index.html), [Postman](./docs/flickcrit.postman_collection.json), http.requests)
+4) Access the
+   API ([Swagger](http://127.0.0.1:8080/docs/swagger-ui/index.html), [Postman](./docs/flickcrit.postman_collection.json),
+   http.requests)
 
 5) Troubleshooting: ensure there are no port conflicts (adjust env file)
 
@@ -44,9 +46,11 @@ Build and test the application using Gradle
 To run the application manually (e.g. with `java -jar ...`) you have to provide mandatory configuration parameters:
 
 ---
+
 # Data Ingestion
 
-The application automatically imports initial data when the `data-boostrap` profile is enabled (by default, it is included in
+The application automatically imports initial data when the `data-boostrap` profile is enabled (by default, it is
+included in
 the Docker stack).
 The imported dataset includes 16 users, 152 movies, and random ratings from each user to each movie.
 
@@ -58,6 +62,38 @@ Here are credentials for the default users:
 | user1@flickcrit.com | user1         | USER  |
 | user2@flickcrit.com | user2         | USER  |
 
+---
+
+# REST API Endpoints
+
+There are some endpoint to start using the application right away.
+For complete list of available action and usage examples kindly
+check [Swagger](http://127.0.0.1:8080/docs/swagger-ui/index.html) or use the
+prepared [Postman](./docs/flickcrit.postman_collection.json) collection.
+
+### Authentication
+
+| Method     | Path                       | Description                                              | Require Auth / Role |
+|------------|----------------------------|----------------------------------------------------------|---------------------|
+| **Auth**   |                            |                                                          |                     |
+| POST       | /api/v1/auth/sign-in       | Exchange user's credentials for a JWT token              | No                  |
+| POST       | /api/v1/auth/sign-up       | Register a new user                                      | No                  |
+| POST       | /api/v1/auth/refresh-token | Exchange a refresh token for a new JWT token pair        | No                  |
+| **Movies** |                            |                                                          |                     |
+| GET        | /api/v1/movies             | Get a paginated list of all movies                       | No                  |
+| GET        | /api/v1/movies/{id}        | Get movie by ID                                          | No                  |
+| GET        | /api/v1/movies/top         | Get top rated movies                                     | No                  |
+| POST       | /api/v1/movies             | Create a new movie                                       | Yes / Admin         |
+| PUT        | /api/v1/movies/{id}        | Update an existing movie                                 | Yes / Admin         |
+| DELETE     | /api/v1/movies/{id}        | Delete a movie                                           | Yes / Admin         |
+| **Rating** |                            |                                                          |                     |
+| GET        | /api/v1/movies/{id}/rating | Get an average rating of a movie by ID                   | No                  |
+| POST       | /api/v1/movies/{id}/rating | Get an average rating of a movie by ID                   | Yes                 |
+| DELETE     | /api/v1/movies/{id}/rating | Remove user's previously given rating from a movie by ID | Yes                 |
+| **Users**  |                            |                                                          |                     |
+| GET        | /api/v1/users              | Get a paginated list of users                            | Yes / Admin         |
+| GET        | /api/v1/users/{id}         | Get a user by ID                                         | Yes / Admin         |
+| DELETE     | /api/v1/users/{id}         | Delete a user by ID                                      | Yes / Admin         |
 
 ---
 
