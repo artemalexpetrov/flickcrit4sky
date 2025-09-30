@@ -35,8 +35,8 @@ class RatingServiceImpl implements RatingService {
     @Override
     @Transactional
     public Rating saveRating(@NonNull Rating rating) {
-        Optional<Rating> rating1 = findRating(rating.getUserId(), rating.getMovieId());
-        Rating ratingToSave = rating1.orElse(rating);
+        Optional<Rating> existingRating = findRating(rating.getUserId(), rating.getMovieId());
+        Rating ratingToSave = existingRating.orElse(rating);
         ratingToSave.updateRating(rating.getValue());
         return repository.save(ratingToSave);
     }
