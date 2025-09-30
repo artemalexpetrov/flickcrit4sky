@@ -1,5 +1,6 @@
 package com.flickcrit.app.infrastructure.persistence.repository;
 
+import com.flickcrit.app.domain.exception.UsernameConflictException;
 import com.flickcrit.app.domain.model.common.EntityId;
 import com.flickcrit.app.domain.model.user.Email;
 import com.flickcrit.app.domain.model.user.User;
@@ -9,6 +10,7 @@ import com.flickcrit.app.infrastructure.persistence.model.UserEntity;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -46,8 +48,13 @@ class UserRepositoryImpl implements UserRepository {
     @Override
     public User save(@NonNull User user) {
         UserEntity entityToSave = convertToEntity(user);
-        UserEntity savedUser = jpaRepository.save(entityToSave);
-        return convertToDomain(savedUser);
+        try {
+            UserEntity savedUser = jpaRepository.save(entityToSave);
+            return convertToDomain(savedUser);
+
+        } catch (DataIntegrityViolationException e) {
+            throw new UsernameConflictException(user.getEmail().value());
+        }
     }
 
     @Override

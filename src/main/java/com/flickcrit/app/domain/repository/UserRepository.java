@@ -1,5 +1,6 @@
 package com.flickcrit.app.domain.repository;
 
+import com.flickcrit.app.domain.exception.UsernameConflictException;
 import com.flickcrit.app.domain.model.user.Email;
 import com.flickcrit.app.domain.model.user.User;
 import com.flickcrit.app.domain.model.user.UserId;
@@ -47,6 +48,7 @@ public interface UserRepository {
      *
      * @param user the User entity to save; must not be null
      * @return the saved User entity
+     * @throws UsernameConflictException if a user with the same email already exists
      */
     User save(User user);
 

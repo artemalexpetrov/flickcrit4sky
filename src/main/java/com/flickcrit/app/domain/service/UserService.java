@@ -1,5 +1,6 @@
 package com.flickcrit.app.domain.service;
 
+import com.flickcrit.app.domain.exception.UsernameConflictException;
 import com.flickcrit.app.domain.model.user.Email;
 import com.flickcrit.app.domain.model.user.User;
 import com.flickcrit.app.domain.model.user.UserId;
@@ -20,6 +21,7 @@ public interface UserService {
      * @param email the email address of the user to be created; must not be null
      * @param password the password of the user to be created; must not be null
      * @return the newly created user
+     * @throws UsernameConflictException if a user with the same email already exists
      */
     User createUser(Email email, String password);
 

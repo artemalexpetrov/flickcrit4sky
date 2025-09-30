@@ -1,6 +1,7 @@
 package com.flickcrit.app.infrastructure.api.advice;
 
 import com.flickcrit.app.domain.exception.EntityNotFoundException;
+import com.flickcrit.app.domain.exception.EntityUniquenessException;
 import jakarta.annotation.Nonnull;
 import org.springframework.http.*;
 import org.springframework.security.access.AccessDeniedException;
@@ -64,6 +65,11 @@ class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     ResponseEntity<Object> handleAuthorizationExceptions(AccessDeniedException e, WebRequest request) {
         return doHandleException(e, request, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(EntityUniquenessException.class)
+    ResponseEntity<Object> handleEntityUniquenessException(EntityUniquenessException e, WebRequest request) {
+        return doHandleException(e, request, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(Exception.class)

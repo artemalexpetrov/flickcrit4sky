@@ -1,5 +1,6 @@
 package com.flickcrit.app.infrastructure.persistence.repository;
 
+import com.flickcrit.app.domain.exception.UsernameConflictException;
 import com.flickcrit.app.domain.model.user.Email;
 import com.flickcrit.app.domain.model.user.User;
 import com.flickcrit.app.domain.model.user.UserId;
@@ -10,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +35,7 @@ class UserRepositoryImplTest {
 
     @InjectMocks
     private UserRepositoryImpl repository;
-
+    
     @Test
     void findByIdWhenUserExistsReturnsUser() {
         // given
@@ -207,6 +209,28 @@ class UserRepositoryImplTest {
         // when/then
         assertThrows(IllegalArgumentException.class, () -> repository.save(null));
         verifyNoInteractions(jpaRepositoryMock, converterMock);
+    }
+
+    @Test
+    void saveWhenUserWithExistingEmailThenThrowsConflictException() {
+        // given
+        User userToSave = mock(User.class);
+        when(userToSave.getEmail()).thenReturn(Email.of("test@example.com"));
+        UserEntity entityToSave = mock(UserEntity.class);
+
+        when(converterMock
+            .convert(any(), eq(UserEntity.class)))
+            .thenReturn(entityToSave);
+
+        when(jpaRepositoryMock
+            .save(any()))
+            .thenThrow(new DataIntegrityViolationException("User exist"));
+
+        // when/then
+        assertThrows(UsernameConflictException.class, () -> repository.save(userToSave));
+        verify(converterMock).convert(userToSave, UserEntity.class);
+        verify(jpaRepositoryMock).save(entityToSave);
+        verifyNoMoreInteractions(jpaRepositoryMock, converterMock);
     }
 
     @Test

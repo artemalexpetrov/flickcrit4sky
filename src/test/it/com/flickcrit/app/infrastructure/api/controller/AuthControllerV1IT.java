@@ -1,5 +1,6 @@
 package com.flickcrit.app.infrastructure.api.controller;
 
+import com.flickcrit.app.domain.exception.UsernameConflictException;
 import com.flickcrit.app.infrastructure.api.model.auth.RefreshTokenRequestDto;
 import com.flickcrit.app.infrastructure.api.model.auth.SignInRequestDto;
 import com.flickcrit.app.infrastructure.api.model.auth.SignUpRequestDto;
@@ -32,6 +33,26 @@ public class AuthControllerV1IT extends BaseControllerIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isCreated());
+
+        verify(portMock).signUp(request);
+        verifyNoMoreInteractions(portMock);
+    }
+
+    @Test
+    void givenSignUpRequestWhenUserExistExpectConflict() throws Exception {
+        // given
+        SignUpRequestDto request = new SignUpRequestDto("test@example.com", "password", "password");
+
+        doThrow(new UsernameConflictException("user"))
+            .when(portMock)
+            .signUp(any());
+
+        // when / then
+        mockMvc
+            .perform(post("/api/v1/auth/sign-up")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isConflict());
 
         verify(portMock).signUp(request);
         verifyNoMoreInteractions(portMock);

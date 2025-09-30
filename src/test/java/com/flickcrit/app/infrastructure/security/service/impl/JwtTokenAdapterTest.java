@@ -53,13 +53,14 @@ class JwtTokenAdapterTest {
     @Test
     void givenExpiredTokenWhenParseTokenThenReturnToken() {
         // given
-        int expiresInMillis = 3000;
+        int expiresInMillis = 1000;
+        int validationOffsetMillis = 1000;
         Token token = new JwtTokenAdapter(createTestToken("test", List.of(), expiresInMillis));
 
         // when / then
         assertNotNull(token);
         Awaitility.await()
-            .atMost(expiresInMillis, TimeUnit.MILLISECONDS)
+            .atMost(expiresInMillis + validationOffsetMillis, TimeUnit.MILLISECONDS)
             .until(token::isExpired);
     }
 

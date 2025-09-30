@@ -2,6 +2,7 @@ package com.flickcrit.app.domain.service.impl;
 
 
 import com.flickcrit.app.domain.exception.EntityNotFoundException;
+import com.flickcrit.app.domain.exception.UsernameConflictException;
 import com.flickcrit.app.domain.model.user.Email;
 import com.flickcrit.app.domain.model.user.User;
 import com.flickcrit.app.domain.model.user.UserId;
@@ -31,6 +32,50 @@ class UserServiceImplTest {
 
     @InjectMocks
     private UserServiceImpl userService;
+
+    @Test
+    void givenValidUserWhenCreateUserExpectSuccess() {
+        // given
+        User expectedUser = mock(User.class);
+        Email email = Email.of("test@example.com");
+        String encryptedPassword = "testPassw0rd";
+
+        when(repositoryMock
+            .save(any()))
+            .thenReturn(expectedUser);
+
+        // when
+
+        User createdUser = userService.createUser(email, encryptedPassword);
+
+        // then
+        assertEquals(expectedUser, createdUser);
+        verify(repositoryMock).save(assertArg(u -> {
+            assertEquals(email, u.getEmail());
+            assertEquals(encryptedPassword, u.getPassword());
+        }));
+        verifyNoMoreInteractions(repositoryMock);
+    }
+
+    @Test
+    void givenDuplicateUsernameWhenCreateUserExpectException() {
+        // given
+        Email email = Email.of("test@example.com");
+        String encryptedPassword = "testPassw0rd";
+        when(repositoryMock.save(any())).thenThrow(new UsernameConflictException("user"));
+
+        // when / then
+        assertThrows(UsernameConflictException.class, () -> userService.createUser(email, encryptedPassword));
+        verify(repositoryMock).save(any());
+        verifyNoMoreInteractions(repositoryMock);
+    }
+
+    @Test
+    void givenNullUserWhenCreateUserExpectException() {
+        // when / then
+        assertThrows(IllegalArgumentException.class, () -> userService.createUser(null, null));
+        verifyNoInteractions(repositoryMock);
+    }
 
     @Test
     void givenUserWhenGetUserByIdExpectUser() {
