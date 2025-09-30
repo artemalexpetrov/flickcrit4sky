@@ -1,4 +1,4 @@
-![JaCoCo Coverage](./.github/badges/jacoco.svg)
+[![Java CI with Gradle](https://github.com/artemalexpetrov/flickcrit4sky/actions/workflows/workflow.yml/badge.svg)](https://github.com/artemalexpetrov/flickcrit4sky/actions/workflows/workflow.yml/badge.svg)![JaCoCo Coverage](./.github/badges/jacoco.svg)
 
 Flick Critique
 ==============
