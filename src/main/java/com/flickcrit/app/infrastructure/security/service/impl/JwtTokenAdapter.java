@@ -41,7 +41,7 @@ class JwtTokenAdapter implements Token {
     @Override
     public Set<GrantedAuthority> getAuthorities() {
         String rawAuthorities = jwt.getPayload().get(AUTHORITIES_KEY, String.class);
-        return Arrays.stream(rawAuthorities.split(","))
+        return Arrays.stream(rawAuthorities.split(AUTHORITIES_DELIMITER))
             .map(String::trim)
             .map(SimpleGrantedAuthority::new)
             .collect(Collectors.toSet());
