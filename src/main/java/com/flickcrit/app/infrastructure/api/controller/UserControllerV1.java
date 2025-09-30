@@ -1,6 +1,7 @@
 package com.flickcrit.app.infrastructure.api.controller;
 
 import com.flickcrit.app.domain.model.user.UserId;
+import com.flickcrit.app.infrastructure.api.model.common.PageRequestDto;
 import com.flickcrit.app.infrastructure.api.model.common.PageResponse;
 import com.flickcrit.app.infrastructure.api.model.user.UserDto;
 import com.flickcrit.app.infrastructure.api.port.UserPort;
@@ -9,11 +10,13 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+
+import static java.util.Objects.requireNonNullElse;
 
 
 @RestController
@@ -34,8 +37,8 @@ public class UserControllerV1 {
     @ApiResponse(responseCode = "403", description = "Access denied")
     @GetMapping
     PageResponse<UserDto> getUsers(
-        @Parameter(description = "Pagination parameters") Pageable pageRequest) {
-        return usersPort.getUsers(pageRequest);
+        @Parameter(description = "Pagination parameters") @Valid PageRequestDto pageRequest) {
+        return usersPort.getUsers(requireNonNullElse(pageRequest, PageRequestDto.defaultRequest()));
     }
 
     @Operation(

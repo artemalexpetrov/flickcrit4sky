@@ -3,6 +3,8 @@ package com.flickcrit.app.infrastructure.api.controller;
 import com.flickcrit.app.domain.exception.EntityNotFoundException;
 import com.flickcrit.app.domain.model.user.UserId;
 import com.flickcrit.app.domain.model.user.UserRole;
+import com.flickcrit.app.infrastructure.api.model.common.PageRequestDto;
+import com.flickcrit.app.infrastructure.api.model.common.PageResponse;
 import com.flickcrit.app.infrastructure.api.model.user.UserDto;
 import com.flickcrit.app.infrastructure.api.port.UserPort;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -25,6 +28,53 @@ public class UserControllerV1IT extends BaseControllerIT {
 
     @MockitoBean
     private UserPort portMock;
+
+    @Test
+    void whenGetUsersExpectUsersPage() throws Exception {
+        // given
+        PageRequestDto pageRequest = PageRequestDto.of(10, 40);
+        UserDto userDto = createUserBuilder().build();
+
+        when(portMock
+            .getUsers(any()))
+            .thenReturn(PageResponse.of(List.of(userDto)));
+
+        // when / then
+        mockMvc.perform(get("/api/v1/users?page=10&size=40")
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.items").isArray())
+            .andExpect(jsonPath("$.items[0].id").value(userDto.id()))
+            .andExpect(jsonPath("$.items[0].email").value(userDto.email()))
+            .andExpect(jsonPath("$.items[0].roles").isArray())
+            .andExpect(jsonPath("$.items[0].roles[0]").value(UserRole.USER.name()));
+
+        verify(portMock).getUsers(pageRequest);
+        verifyNoMoreInteractions(portMock);
+    }
+
+    @Test
+    void givenInvalidPageNumberWhenGetUsersExpectBadRequest() throws Exception {
+        // when / then
+        mockMvc.perform(get("/api/v1/users?page=-1&size=10")
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+
+        verifyNoInteractions(portMock);
+    }
+
+    @Test
+    void givenInvalidPageSizeWhenGetUsersExpectBadRequest() throws Exception {
+        // when / then
+        mockMvc.perform(get("/api/v1/users?page=1&size=1000")
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+
+        verifyNoInteractions(portMock);
+    }
 
     @Test
     void givenValidIdWhenGetUserThenReturnUser() throws Exception {

@@ -1,9 +1,9 @@
 package com.flickcrit.app.infrastructure.api.port;
 
 import com.flickcrit.app.domain.model.user.UserId;
+import com.flickcrit.app.infrastructure.api.model.common.PageRequestDto;
 import com.flickcrit.app.infrastructure.api.model.common.PageResponse;
 import com.flickcrit.app.infrastructure.api.model.user.UserDto;
-import org.springframework.data.domain.Pageable;
 
 public interface UserPort {
 
@@ -18,10 +18,10 @@ public interface UserPort {
     /**
      * Retrieves a paginated and sorted list of users.
      *
-     * @param pagingRequest the pagination and sorting details
+     * @param pageRequest the pagination and sorting details
      * @return a page containing a list of UserDto objects
      */
-    PageResponse<UserDto> getUsers(Pageable pagingRequest);
+    PageResponse<UserDto> getUsers(PageRequestDto pageRequest);
 
     /**
      * Deletes a user identified by the provided unique identifier.

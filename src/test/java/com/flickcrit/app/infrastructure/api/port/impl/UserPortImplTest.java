@@ -4,6 +4,7 @@ import com.flickcrit.app.domain.exception.EntityNotFoundException;
 import com.flickcrit.app.domain.model.user.User;
 import com.flickcrit.app.domain.model.user.UserId;
 import com.flickcrit.app.domain.service.UserService;
+import com.flickcrit.app.infrastructure.api.model.common.PageRequestDto;
 import com.flickcrit.app.infrastructure.api.model.common.PageResponse;
 import com.flickcrit.app.infrastructure.api.model.user.UserDto;
 import org.junit.jupiter.api.Test;
@@ -14,11 +15,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -41,7 +42,7 @@ class UserPortImplTest {
         // given
         User user = mock(User.class);
         UserDto userDto = mock(UserDto.class);
-        Pageable pageable = mock(Pageable.class);
+        PageRequestDto pageRequest = PageRequestDto.of(10, 40);
         Page<User> usersPage = new PageImpl<>(List.of(user));
 
         when(userServiceMock
@@ -53,12 +54,16 @@ class UserPortImplTest {
             .thenReturn(userDto);
 
         // when
-        PageResponse<UserDto> usersDto = userPort.getUsers(pageable);
+        PageResponse<UserDto> usersDto = userPort.getUsers(pageRequest);
 
         // then
         assertThat(usersDto).isNotNull();
         assertThat(usersDto.getItems()).containsExactly(userDto);
-        verify(userServiceMock).getUsers(pageable);
+        verify(userServiceMock).getUsers(assertArg(pageable -> {
+            assertEquals(pageRequest.getPage(), pageable.getPageNumber());
+            assertEquals(pageRequest.getSize(), pageable.getPageSize());
+        }));
+
         verify(converterMock).convert(user, UserDto.class);
         verifyNoMoreInteractions(userServiceMock, converterMock);
     }

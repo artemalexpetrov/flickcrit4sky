@@ -3,6 +3,7 @@ package com.flickcrit.app.infrastructure.api.port.impl;
 import com.flickcrit.app.domain.model.movie.Movie;
 import com.flickcrit.app.domain.model.movie.MovieId;
 import com.flickcrit.app.domain.service.MovieService;
+import com.flickcrit.app.infrastructure.api.model.common.PageRequestDto;
 import com.flickcrit.app.infrastructure.api.model.common.PageResponse;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieCreateRequest;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieDto;
@@ -11,7 +12,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,9 +23,9 @@ class MoviePortImpl implements MoviePort {
     private final ConversionService converter;
 
     @Override
-    public PageResponse<MovieDto> getMovies(@NonNull Pageable pagingRequest) {
+    public PageResponse<MovieDto> getMovies(@NonNull PageRequestDto pageRequest) {
         Page<MovieDto> moviesPage = service
-            .getMovies(pagingRequest)
+            .getMovies(PageRequest.of(pageRequest.getPage(), pageRequest.getSize()))
             .map(this::convertToDto);
 
         return PageResponse.of(moviesPage);

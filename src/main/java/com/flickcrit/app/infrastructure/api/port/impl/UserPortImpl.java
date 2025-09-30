@@ -3,6 +3,7 @@ package com.flickcrit.app.infrastructure.api.port.impl;
 import com.flickcrit.app.domain.model.user.User;
 import com.flickcrit.app.domain.model.user.UserId;
 import com.flickcrit.app.domain.service.UserService;
+import com.flickcrit.app.infrastructure.api.model.common.PageRequestDto;
 import com.flickcrit.app.infrastructure.api.model.common.PageResponse;
 import com.flickcrit.app.infrastructure.api.model.user.UserDto;
 import com.flickcrit.app.infrastructure.api.port.UserPort;
@@ -10,7 +11,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,9 +28,9 @@ class UserPortImpl implements UserPort {
     }
 
     @Override
-    public PageResponse<UserDto> getUsers(@NonNull Pageable pagingRequest) {
+    public PageResponse<UserDto> getUsers(@NonNull PageRequestDto pageRequest) {
         Page<UserDto> usersPage = userService
-            .getUsers(pagingRequest)
+            .getUsers(PageRequest.of(pageRequest.getPage(), pageRequest.getSize()))
             .map(this::convertToDto);
         
         return PageResponse.of(usersPage);

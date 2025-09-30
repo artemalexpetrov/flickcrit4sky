@@ -1,10 +1,10 @@
 package com.flickcrit.app.infrastructure.api.port;
 
 import com.flickcrit.app.domain.model.movie.MovieId;
+import com.flickcrit.app.infrastructure.api.model.common.PageRequestDto;
 import com.flickcrit.app.infrastructure.api.model.common.PageResponse;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieCreateRequest;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieDto;
-import org.springframework.data.domain.Pageable;
 
 /**
  * Provides API operations for managing and retrieving movie entities.
@@ -14,10 +14,10 @@ public interface MoviePort {
     /**
      * Retrieves a paginated list of movies.
      *
-     * @param pagingRequest the pagination and sorting information
+     * @param pageRequest the pagination and sorting information
      * @return a page containing a list of MovieDto objects
      */
-    PageResponse<MovieDto> getMovies(Pageable pagingRequest);
+    PageResponse<MovieDto> getMovies(PageRequestDto pageRequest);
 
     /**
      * Retrieves a movie by its unique identifier.

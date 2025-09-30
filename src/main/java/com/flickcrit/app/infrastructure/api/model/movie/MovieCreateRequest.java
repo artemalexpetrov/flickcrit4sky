@@ -15,11 +15,11 @@ import java.time.Year;
 public record MovieCreateRequest(
 
     @NotBlank(message = "Movie title cannot be blank")
-    @Size(max = 255, message = "Movie title must not exceed 255 characters")
+    @Size(max = 255, message = "Movie title must not exceed {max} characters")
     String title,
 
-    @Min(value = 1888, message = "Movie release year must be after {1}")
-    @Max(value = 2099, message = "Movie release year must be before {1}")
+    @Min(value = 1888, message = "Movie release year must be after {value}")
+    @Max(value = 2099, message = "Movie release year must be before {value}")
     @NotNull(message = "Movie release year is required")
     Integer year
 

@@ -2,6 +2,7 @@ package com.flickcrit.app.infrastructure.api.controller;
 
 import com.flickcrit.app.domain.exception.EntityNotFoundException;
 import com.flickcrit.app.domain.model.movie.MovieId;
+import com.flickcrit.app.infrastructure.api.model.common.PageRequestDto;
 import com.flickcrit.app.infrastructure.api.model.common.PageResponse;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieCreateRequest;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieDto;
@@ -10,7 +11,6 @@ import com.flickcrit.app.infrastructure.api.port.TopRatingPort;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -35,7 +35,7 @@ public class MovieControllerV1IT extends BaseControllerIT {
     @Test
     void whenGetMoviesExpectMoviesPage() throws Exception {
         // given
-        PageRequest pageRequest = PageRequest.of(10, 100);
+        PageRequestDto pageRequest = PageRequestDto.of(10, 40);
         MovieDto movieDto = createMovieBuilder().build();
 
         when(portMock
@@ -43,7 +43,7 @@ public class MovieControllerV1IT extends BaseControllerIT {
             .thenReturn(PageResponse.of(List.of(movieDto)));
 
         // when / then
-        mockMvc.perform(get("/api/v1/movies?page=10&size=100")
+        mockMvc.perform(get("/api/v1/movies?page=10&size=40")
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -55,6 +55,28 @@ public class MovieControllerV1IT extends BaseControllerIT {
 
         verify(portMock).getMovies(pageRequest);
         verifyNoMoreInteractions(portMock);
+    }
+
+    @Test
+    void givenInvalidPageNumberWhenGetMoviesExpectBadRequest() throws Exception {
+        // when / then
+        mockMvc.perform(get("/api/v1/movies?page=-1&size=10")
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+
+        verifyNoInteractions(portMock);
+    }
+
+    @Test
+    void givenInvalidPageSizeWhenGetMoviesExpectBadRequest() throws Exception {
+        // when / then
+        mockMvc.perform(get("/api/v1/movies?page=1&size=1000")
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+
+        verifyNoInteractions(portMock);
     }
 
     @Test

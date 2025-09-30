@@ -1,6 +1,7 @@
 package com.flickcrit.app.infrastructure.api.controller;
 
 import com.flickcrit.app.domain.model.movie.MovieId;
+import com.flickcrit.app.infrastructure.api.model.common.PageRequestDto;
 import com.flickcrit.app.infrastructure.api.model.common.PageResponse;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieCreateRequest;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieDto;
@@ -15,13 +16,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static java.util.Objects.requireNonNullElse;
 
 
 @Validated
@@ -38,8 +40,8 @@ public class MovieControllerV1 {
     @Operation(summary = "Get all movies", description = "Returns a paginated list of all movies")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved movies")
     @GetMapping
-    PageResponse<MovieDto> getMovies(@Valid Pageable pagingRequest) {
-        return port.getMovies(pagingRequest);
+    PageResponse<MovieDto> getMovies(@Valid PageRequestDto pagingRequest) {
+        return port.getMovies(requireNonNullElse(pagingRequest, PageRequestDto.defaultRequest()));
     }
 
     @Operation(summary = "Get top rated movies", description = "Returns a list of top rated movies")

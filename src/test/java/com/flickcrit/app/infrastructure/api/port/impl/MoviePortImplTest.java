@@ -4,6 +4,7 @@ import com.flickcrit.app.domain.exception.EntityNotFoundException;
 import com.flickcrit.app.domain.model.movie.Movie;
 import com.flickcrit.app.domain.model.movie.MovieId;
 import com.flickcrit.app.domain.service.MovieService;
+import com.flickcrit.app.infrastructure.api.model.common.PageRequestDto;
 import com.flickcrit.app.infrastructure.api.model.common.PageResponse;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieCreateRequest;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieDto;
@@ -15,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
 import java.time.Year;
 import java.util.List;
@@ -44,11 +44,11 @@ class MoviePortImplTest {
         // given
         Movie movie = mock(Movie.class);
         MovieDto movieDto = mock(MovieDto.class);
-        Pageable pageable = mock(Pageable.class);
+        PageRequestDto pageRequest = PageRequestDto.of(10, 40);
         Page<Movie> moviePage = new PageImpl<>(List.of(movie));
 
         when(movieServiceMock
-            .getMovies(pageable))
+            .getMovies(any()))
             .thenReturn(moviePage);
 
         when(converterMock
@@ -56,12 +56,15 @@ class MoviePortImplTest {
             .thenReturn(movieDto);
 
         // when
-        PageResponse<MovieDto> moviesDto = moviePort.getMovies(pageable);
+        PageResponse<MovieDto> moviesDto = moviePort.getMovies(pageRequest);
 
         // then
         assertThat(moviesDto).isNotNull();
         assertThat(moviesDto.getItems()).containsExactly(movieDto);
-        verify(movieServiceMock).getMovies(pageable);
+        verify(movieServiceMock).getMovies(assertArg(pageable -> {
+            assertEquals(pageRequest.getPage(), pageable.getPageNumber());
+            assertEquals(pageRequest.getSize(), pageable.getPageSize());
+        }));
         verify(converterMock).convert(movie, MovieDto.class);
         verifyNoMoreInteractions(movieServiceMock, converterMock);
     }
