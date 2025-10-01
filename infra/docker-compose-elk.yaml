@@ -13,7 +13,7 @@ services:
     depends_on:
       elk-setup:
         condition: service_healthy
-    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_STACK_VERSION}
     restart: unless-stopped
     volumes:
       - elasticsearch_certs:/usr/share/elasticsearch/config/certs
@@ -22,7 +22,7 @@ services:
       - ${ELASTIC_PORT}:9200
     environment:
       - node.name=elasticsearch01
-      - cluster.name=${CLUSTER_NAME}
+      - cluster.name=${ELK_CLUSTER_NAME}
       - cluster.initial_master_nodes=elasticsearch01
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - bootstrap.memory_lock=true
@@ -36,9 +36,9 @@ services:
       - xpack.security.transport.ssl.certificate=certs/elasticsearch01/elasticsearch01.crt
       - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
       - xpack.security.transport.ssl.verification_mode=certificate
-      - xpack.license.self_generated.type=${LICENSE}
+      - xpack.license.self_generated.type=${ELK_LICENSE}
       - xpack.ml.use_auto_machine_memory_percent=true
-    mem_limit: ${MEM_LIMIT}
+    mem_limit: ${ELK_MEM_LIMIT}
     ulimits:
       memlock:
         soft: -1
@@ -57,7 +57,7 @@ services:
     depends_on:
       elasticsearch01:
         condition: service_healthy
-    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
+    image: docker.elastic.co/kibana/kibana:${ELK_STACK_VERSION}
     restart: unless-stopped
     volumes:
       - elasticsearch_certs:/usr/share/kibana/config/certs
@@ -70,7 +70,7 @@ services:
       - ELASTICSEARCH_USERNAME=kibana_system
       - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
       - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
-    mem_limit: ${MEM_LIMIT}
+    mem_limit: ${ELK_MEM_LIMIT}
     healthcheck:
       test:
         ["CMD-SHELL", "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'"]
@@ -82,7 +82,7 @@ services:
   # ElasticSearch Filebeat
   # ===============================================================================================
   filebeat:
-    image: docker.elastic.co/beats/filebeat:${STACK_VERSION}
+    image: docker.elastic.co/beats/filebeat:${ELK_STACK_VERSION}
     entrypoint: "filebeat --strict.perms=false"
     volumes:
       - ./elastic/filebeat.yaml:/usr/share/filebeat/filebeat.yml:ro
@@ -104,7 +104,7 @@ services:
   # ElasticSearch & Kibana Setup
   # ===============================================================================================
   elk-setup:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_STACK_VERSION}
     volumes:
       - elasticsearch_certs:/usr/share/elasticsearch/config/certs
       - ./elastic/setup.sh:/tmp/setup.sh

@@ -24,6 +24,7 @@ Dockerization and Observability.
    ```bash
    cp .env.dist .env
    ```
+The file contains fake "secrets" **just for the demo purposes**.
 
 2) Spin up the docker containers
    ```bash
