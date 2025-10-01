@@ -18,8 +18,6 @@ services:
     volumes:
       - elasticsearch_certs:/usr/share/elasticsearch/config/certs
       - elasticsearch_data:/usr/share/elasticsearch/data
-    ports:
-      - ${ELASTIC_PORT}:9200
     environment:
       - node.name=elasticsearch01
       - cluster.name=${ELK_CLUSTER_NAME}
