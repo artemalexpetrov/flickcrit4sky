@@ -3,8 +3,10 @@
 Flick Critique
 ==============
 
-Flick Critique is a movie rating application built with Java and Spring Boot. The application provides a platform
-where users rate movies.
+Flick Critique is a simplified movie rating application built with Java and Spring Boot. The application provides a platform
+where users rate movies. The solution aims to demonstrate proficiency through a practical project that covers a 
+spectrum of Java-related topics, including OOP, Design Patterns, Testing, Database Integration, API Design,
+Dockerization and Observability.
 
 ---
 
