@@ -46,7 +46,7 @@ class JwtTokenServiceTest {
 
         assertNotNull(refreshToken);
         assertEquals(userDetails.getUsername(), refreshToken.getUsername());
-        assertTrue(accessToken.isRefreshToken());
+        assertTrue(refreshToken.isRefreshToken());
         assertFalse(refreshToken.isExpired());
     }
 
