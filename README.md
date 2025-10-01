@@ -24,7 +24,7 @@ Dockerization and Observability.
    ```bash
    cp .env.dist .env
    ```
-The file contains fake "secrets" **just for the demo purposes**.
+   The file contains fake "secrets" **just for the demo purposes**. \ 
 
 2) Spin up the docker containers
    ```bash
@@ -36,7 +36,9 @@ The file contains fake "secrets" **just for the demo purposes**.
    API ([Swagger](http://127.0.0.1:8080/docs/swagger-ui/index.html), [Postman](./docs/flickcrit.postman_collection.json),
    http.requests)
 
-5) Troubleshooting: ensure there are no port conflicts (adjust env file)
+### Troubleshooting
+* Ensure there are no port conflicts. By default, the application uses default ports for services. Adjust the `.env` file if needed
+* Also there are [known issues](#known-issues) that make some services unavailable
 
 ---
 
@@ -124,4 +126,6 @@ prepared [Postman](./docs/flickcrit.postman_collection.json) collection.
 | Actuator   | http://<container_ip>:8888/actuator        | _Unprotected_                                   | Used in internal docker network for metrics scrapping, not exposed outside |
 
 
-
+# Known Issues
+* Unable to run the dockerized ELK stack on ARM-based Mac devices
+* Running with Podman may require additional configuration
