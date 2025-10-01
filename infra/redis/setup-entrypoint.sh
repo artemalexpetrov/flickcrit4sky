@@ -16,3 +16,4 @@ echo "user default off nopass nocommands" >> /usr/local/etc/redis/custom_aclfile
 
 # Call the original Docker entrypoint script with redis-server and the path to the custom Redis configuration
 exec docker-entrypoint.sh redis-server /usr/local/etc/redis/redis.conf
+

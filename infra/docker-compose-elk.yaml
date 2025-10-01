@@ -83,7 +83,7 @@ services:
   # ===============================================================================================
   filebeat:
     image: docker.elastic.co/beats/filebeat:${STACK_VERSION}
-#    entrypoint: "filebeat -e -strict.perms=false"
+    entrypoint: "filebeat --strict.perms=false"
     volumes:
       - ./elastic/filebeat.yaml:/usr/share/filebeat/filebeat.yml:ro
       - elasticsearch_certs:/usr/share/elasticsearch/config/certs
