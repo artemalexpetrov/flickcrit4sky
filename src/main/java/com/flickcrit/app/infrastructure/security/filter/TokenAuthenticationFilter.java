@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -72,6 +73,10 @@ class TokenAuthenticationFilter extends OncePerRequestFilter implements Authenti
 
         if (token.isExpired()) {
             throw new CredentialsExpiredException("Token has expired");
+        }
+
+        if (!token.isAccessToken()) {
+            throw new BadCredentialsException("The given token is not a valid access token");
         }
 
         UsernamePasswordAuthenticationToken authenticationToken

@@ -101,12 +101,9 @@ class AuthServiceImplTest {
         UserDetails userDetails = mock(UserDetails.class);
         TokenPair expectedTokenPair = mock(TokenPair.class);
 
-        when(token.isExpired())
-            .thenReturn(false);
-
-        when(token
-            .getUsername())
-            .thenReturn(username);
+        when(token.isExpired()).thenReturn(false);
+        when(token.getUsername()).thenReturn(username);
+        when(token.isRefreshToken()).thenReturn(true);
 
         when(tokenServiceMock
             .parseToken(any()))

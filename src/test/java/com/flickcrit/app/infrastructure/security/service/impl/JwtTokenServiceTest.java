@@ -1,6 +1,7 @@
 package com.flickcrit.app.infrastructure.security.service.impl;
 
 import com.flickcrit.app.infrastructure.security.config.JwtProperties;
+import com.flickcrit.app.infrastructure.security.service.Token;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -35,15 +36,17 @@ class JwtTokenServiceTest {
         assertNotNull(tokenPair.accessToken());
         assertNotNull(tokenPair.refreshToken());
 
-        var accessToken = jwtTokenService.parseToken(tokenPair.accessToken());
-        var refreshToken = jwtTokenService.parseToken(tokenPair.refreshToken());
+        Token accessToken = jwtTokenService.parseToken(tokenPair.accessToken());
+        Token refreshToken = jwtTokenService.parseToken(tokenPair.refreshToken());
 
         assertNotNull(accessToken);
         assertEquals(userDetails.getUsername(), accessToken.getUsername());
+        assertTrue(accessToken.isAccessToken());
         assertFalse(accessToken.isExpired());
 
         assertNotNull(refreshToken);
         assertEquals(userDetails.getUsername(), refreshToken.getUsername());
+        assertTrue(accessToken.isRefreshToken());
         assertFalse(refreshToken.isExpired());
     }
 

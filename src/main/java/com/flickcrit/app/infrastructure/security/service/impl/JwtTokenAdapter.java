@@ -16,8 +16,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 class JwtTokenAdapter implements Token {
 
+    static final String TOKEN_TYPE_KEY = "type";
     static final String AUTHORITIES_KEY = "authorities";
     static final String AUTHORITIES_DELIMITER = ",";
+    static final String ACCESS_TOKEN_TYPE = "access";
+    static final String REFRESH_TOKEN_TYPE = "refresh";
 
     private final Jwt<?, Claims> jwt;
 
@@ -36,6 +39,20 @@ class JwtTokenAdapter implements Token {
         return jwt.getPayload()
             .getExpiration()
             .before(new Date());
+    }
+
+    @Override
+    public boolean isAccessToken() {
+        return jwt.getPayload()
+            .get(TOKEN_TYPE_KEY, String.class)
+            .equals(ACCESS_TOKEN_TYPE);
+    }
+
+    @Override
+    public boolean isRefreshToken() {
+        return jwt.getPayload()
+            .get(TOKEN_TYPE_KEY, String.class)
+            .equals(REFRESH_TOKEN_TYPE);
     }
 
     @Override

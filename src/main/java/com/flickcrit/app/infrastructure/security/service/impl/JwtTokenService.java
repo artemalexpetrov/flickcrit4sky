@@ -26,12 +26,8 @@ class JwtTokenService implements TokenService {
 
     @Override
     public TokenPair issueToken(UserDetails userDetails) {
-        String refreshToken = preBuild(userDetails, jwtProperties.getRefreshTokenExpirationTimeSeconds()).compact();
-        String accessToken = preBuild(userDetails, jwtProperties.getAccessTokenExpirationTimeSeconds())
-            .claims(Map.of(JwtTokenAdapter.AUTHORITIES_KEY, userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(JwtTokenAdapter.AUTHORITIES_DELIMITER))))
-            .compact();
+        String refreshToken = createRefreshToken(userDetails);
+        String accessToken = createAccessToken(userDetails);
 
         return new TokenPair(accessToken, refreshToken);
     }
@@ -48,6 +44,24 @@ class JwtTokenService implements TokenService {
         } catch (Exception e) {
             throw new BadCredentialsException(e.getMessage());
         }
+    }
+
+    private String createAccessToken(UserDetails userDetails) {
+        String userAuthorities = userDetails.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.joining(JwtTokenAdapter.AUTHORITIES_DELIMITER));
+
+        return preBuild(userDetails, jwtProperties.getAccessTokenExpirationTimeSeconds())
+            .claims(Map.of(
+                JwtTokenAdapter.AUTHORITIES_KEY, userAuthorities,
+                JwtTokenAdapter.TOKEN_TYPE_KEY, JwtTokenAdapter.ACCESS_TOKEN_TYPE
+            )).compact();
+    }
+
+    private String createRefreshToken(UserDetails userDetails) {
+        return preBuild(userDetails, jwtProperties.getRefreshTokenExpirationTimeSeconds())
+            .claims(Map.of(JwtTokenAdapter.TOKEN_TYPE_KEY, JwtTokenAdapter.REFRESH_TOKEN_TYPE))
+            .compact();
     }
 
     private JwtBuilder preBuild(UserDetails user, long expirationTimeSeconds) {
