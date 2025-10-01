@@ -27,11 +27,13 @@ public class CaffeineCacheConfig {
         CaffeineCache moviesCache = new CaffeineCache(CacheRegions.MOVIES, Caffeine.newBuilder()
             .expireAfterWrite(properties.getMoviesCacheTtl())
             .maximumSize(MAXIMUM_CACHE_SIZE)
+            .recordStats()
             .build());
 
-        CaffeineCache ratingsCache = new CaffeineCache(CacheRegions.MOVIES, Caffeine.newBuilder()
+        CaffeineCache ratingsCache = new CaffeineCache(CacheRegions.MOVIES_RATINGS, Caffeine.newBuilder()
             .expireAfterWrite(properties.getMoviesRatingsCacheTtl())
-            .maximumSize(1000)
+            .maximumSize(MAXIMUM_CACHE_SIZE)
+            .recordStats()
             .build());
 
         SimpleCacheManager cacheManager = new SimpleCacheManager();
