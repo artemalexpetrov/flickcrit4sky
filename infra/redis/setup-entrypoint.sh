@@ -7,7 +7,7 @@ mkdir -p /usr/local/etc/redis
 echo "aclfile /usr/local/etc/redis/custom_aclfile.acl" > /usr/local/etc/redis/redis.conf
 
 # Generate ACL file using environment variables
-if [ -n "$REDIS_USERNAME" ] && [ -n "$REDIS_PASSWORD" ]; then
+if [ x"${REDIS_USERNAME}" != x ] && [ x"${REDIS_PASSWORD}" != x ]; then
     echo "user ${REDIS_USERNAME} on allkeys allchannels allcommands >${REDIS_PASSWORD} " > /usr/local/etc/redis/custom_aclfile.acl
 fi
 
