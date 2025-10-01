@@ -1,9 +1,9 @@
 #!/bin/bash
 
-if [ x"${ELASTIC_PASSWORD}" == x ]; then
+if [ x"$ELASTIC_PASSWORD" == x ]; then
   echo "Set the ELASTIC_PASSWORD environment variable in the .env file";
   exit 1;
-elif [ x"${KIBANA_PASSWORD}" == x ]; then
+elif [ x"$KIBANA_PASSWORD" == x ]; then
   echo "Set the KIBANA_PASSWORD environment variable in the .env file";
   exit 1;
 fi;
