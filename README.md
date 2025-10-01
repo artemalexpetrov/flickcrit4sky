@@ -30,7 +30,8 @@ Dockerization and Observability.
    ```bash
    docker-compose up --build
    ```
-3) Access the API ([Swagger](http://127.0.0.1:8080/docs/swagger-ui/index.html), [Postman](./docs/flickcrit.postman_collection.json), [OpenAPI JSON](./docs/flickcrit.open-api.json)) \
+3) Access the API, e.g. `http://127.0.0.1:8080/api/v1/movies` \
+   For details check [Swagger](http://127.0.0.1:8080/docs/swagger-ui/index.html), [Postman](./docs/flickcrit.postman_collection.json) or [OpenAPI JSON](./docs/flickcrit.open-api.json) \
    **IMPORTANT**: The link to the Swagger UI intentionally points to the local instance! 
 
 ### Troubleshooting
