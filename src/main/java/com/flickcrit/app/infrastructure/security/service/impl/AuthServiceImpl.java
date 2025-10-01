@@ -38,6 +38,9 @@ class AuthServiceImpl implements AuthService {
         if (token == null || token.isExpired()) {
             throw new BadCredentialsException("Authentication token is expired or invalid");
         }
+        if (!token.isRefreshToken()) {
+            throw new BadCredentialsException("Invalid refresh token");
+        }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(token.getUsername());
         return tokenService.issueToken(userDetails);

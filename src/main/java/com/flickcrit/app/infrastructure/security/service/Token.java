@@ -36,6 +36,20 @@ public interface Token {
     boolean isExpired();
 
     /**
+     * Determines if this token represents an access token.
+     *
+     * @return true if this token is an access token, false otherwise.
+     */
+    boolean isAccessToken();
+
+    /**
+     * Determines if this token represents a refresh token.
+     *
+     * @return true if this token is a refresh token, false otherwise.
+     */
+    boolean isRefreshToken();
+
+    /**
      * Retrieves the set of authorities granted to this token.
      * Authorities typically represent roles or permissions associated
      * with the token and may be used to determine access control.

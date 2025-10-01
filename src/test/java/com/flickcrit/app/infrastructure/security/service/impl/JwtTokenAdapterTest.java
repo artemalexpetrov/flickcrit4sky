@@ -16,6 +16,7 @@ import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,7 +40,7 @@ class JwtTokenAdapterTest {
         long expiresInMillis = 30000;
         String username = "test@example.com";
         List<String> roles = List.of("ROLE_USER");
-        Token token = new JwtTokenAdapter(createTestToken(username, roles, expiresInMillis));
+        Token token = new JwtTokenAdapter(createAccessToken(username, roles, expiresInMillis));
 
         // when / then
         assertNotNull(token);
@@ -55,7 +56,7 @@ class JwtTokenAdapterTest {
         // given
         int expiresInMillis = 1000;
         int validationOffsetMillis = 1000;
-        Token token = new JwtTokenAdapter(createTestToken("test", List.of(), expiresInMillis));
+        Token token = new JwtTokenAdapter(createAccessToken("test", List.of(), expiresInMillis));
 
         // when / then
         assertNotNull(token);
@@ -64,12 +65,50 @@ class JwtTokenAdapterTest {
             .until(token::isExpired);
     }
 
-    private Jws<Claims> createTestToken(String username, List<String> roles, long expiresInMillis) {
+    @Test
+    void givenTokenWhenIsAccessTokenExpectCorrectAnswer() {
+        // given
+        Token accessToken = new JwtTokenAdapter(createAccessToken("test@user.com", List.of(), 300000));
+        Token refreshToken = new JwtTokenAdapter(createRefreshToken("test@user.com", 300000));
+
+        // when / then
+        assertNotNull(accessToken);
+        assertTrue(accessToken.isAccessToken());
+        assertFalse(refreshToken.isAccessToken());
+    }
+
+    @Test
+    void givenTokenWhenIsRefreshTokenExpectCorrectAnswer() {
+        // given
+        Token accessToken = new JwtTokenAdapter(createAccessToken("test@user.com", List.of(), 300000));
+        Token refreshToken = new JwtTokenAdapter(createRefreshToken("test@user.com", 300000));
+
+        // when / then
+        assertNotNull(accessToken);
+        assertTrue(refreshToken.isRefreshToken());
+        assertFalse(accessToken.isRefreshToken());
+    }
+
+    private Jws<Claims> createAccessToken(String username, List<String> roles, long expiresInMillis) {
+        Map<String, String> claims = Map.of(
+            JwtTokenAdapter.AUTHORITIES_KEY, String.join(",", roles),
+            JwtTokenAdapter.TOKEN_TYPE_KEY, JwtTokenAdapter.ACCESS_TOKEN_TYPE
+        );
+
+        return createTestToken(username, claims, expiresInMillis);
+    }
+
+    private Jws<Claims> createRefreshToken(String username, long expiresInMillis) {
+        Map<String, String> claims = Map.of(JwtTokenAdapter.TOKEN_TYPE_KEY, JwtTokenAdapter.REFRESH_TOKEN_TYPE);
+        return createTestToken(username, claims, expiresInMillis);
+    }
+
+    private Jws<Claims> createTestToken(String username, Map<String, ?> claims, long expiresInMillis) {
         String rawJwt = Jwts.builder()
-            .subject(username)
-            .issuedAt(new Date())
-            .claim(JwtTokenAdapter.AUTHORITIES_KEY, String.join(",", roles))
             .expiration(Date.from(Instant.now().plusMillis(expiresInMillis)))
+            .issuedAt(new Date())
+            .subject(username)
+            .claims(claims)
             .signWith(key)
             .compact();
 
@@ -77,4 +116,5 @@ class JwtTokenAdapterTest {
             .verifyWith(key).build()
             .parseSignedClaims(rawJwt);
     }
+
 }
