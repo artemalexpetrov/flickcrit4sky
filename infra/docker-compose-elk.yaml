@@ -11,7 +11,7 @@ services:
   # ===============================================================================================
   elasticsearch01:
     depends_on:
-      elk-setup:
+      elk-setup-certs:
         condition: service_healthy
     image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_STACK_VERSION}
     restart: unless-stopped
@@ -55,8 +55,8 @@ services:
   # ===============================================================================================
   kibana:
     depends_on:
-      elasticsearch01:
-        condition: service_healthy
+      elk-config-users:
+        condition: service_completed_successfully
     image: docker.elastic.co/kibana/kibana:${ELK_STACK_VERSION}
     restart: unless-stopped
     volumes:
@@ -97,13 +97,32 @@ services:
       - KIBANA_USER=kibana_system
       - KIBANA_PASSWORD=${KIBANA_PASSWORD}
     depends_on:
-      elasticsearch01:
+      kibana:
         condition: service_healthy
 
   # ===============================================================================================
   # ElasticSearch & Kibana Setup
   # ===============================================================================================
-  elk-setup:
+  elk-setup-certs:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_STACK_VERSION}
+    volumes:
+      - elasticsearch_certs:/usr/share/elasticsearch/config/certs
+      - ./elastic/setup-certs.sh:/tmp/setup.sh
+    user: "0"
+    command: bash /tmp/setup.sh
+    environment:
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - KIBANA_PASSWORD=${KIBANA_PASSWORD}
+    healthcheck:
+      test: [ "CMD-SHELL", "[ -f config/certs/elasticsearch01/elasticsearch01.crt ]" ]
+      interval: 1s
+      timeout: 5s
+      retries: 120
+      
+  elk-config-users:
+    depends_on:
+      elasticsearch01:
+        condition: service_healthy
     image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_STACK_VERSION}
     volumes:
       - elasticsearch_certs:/usr/share/elasticsearch/config/certs
@@ -114,7 +133,7 @@ services:
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - KIBANA_PASSWORD=${KIBANA_PASSWORD}
     healthcheck:
-      test: [ "CMD-SHELL", "[ -f config/certs/elasticsearch01/elasticsearch01.crt ]" ]
+      test: [ "CMD-SHELL", "[ -f /tmp/.setup_complete ]" ]
       interval: 1s
       timeout: 5s
       retries: 120
