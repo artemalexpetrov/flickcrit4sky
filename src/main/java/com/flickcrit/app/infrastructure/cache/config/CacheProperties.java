@@ -23,6 +23,6 @@ public class CacheProperties {
 
     @DurationMax(days = 10, message = "The maximum cache TTL is {days} days")
     @DurationMin(seconds = 5, message = "The minimum cache TTL is {seconds} seconds")
-    private Duration moviesRatingsCacheTtl = Duration.ofSeconds(10);;
+    private Duration moviesRatingsCacheTtl = Duration.ofSeconds(10);
 
 }

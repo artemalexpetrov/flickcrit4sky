@@ -39,13 +39,24 @@ where users rate movies.
 
 # How to Build & Test
 
-Build and test the application using Gradle
+Build and test the application without the provided Docker stack using just Gradle
 
    ```bash
    ./gradlew build
    ```
 
-To run the application manually (e.g. with `java -jar ...`) you have to provide mandatory configuration parameters:
+To run the application manually (e.g. with `java -jar ...`) you have to provide mandatory configuration parameters, such
+as PostgreSQL and Redis connection details using properties file or environment variables. 
+```properties
+spring.datasource.url=jdbc:postgresql://database-host:5432/dbname
+spring.datasource.username=<username>
+spring.datasource.password=<password>
+spring.data.redis.host=redis-host
+spring.data.redis.port=6379
+spring.data.redis.username=<username> # if required
+spring.data.redis.password=<password> # if required
+jwt.secret-key=<your secret key>      # min 512 bytes
+```
 
 ---
 
