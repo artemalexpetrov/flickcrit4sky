@@ -71,8 +71,8 @@ public class SecurityConfig {
             .httpBasic(AbstractHttpConfigurer::disable)
             .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                .requestMatchers(HttpMethod.GET, "/error/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/docs/**").permitAll()
-
                 .requestMatchers(HttpMethod.GET,
                     "/actuator/prometheus",
                     "/actuator/metrics",
@@ -83,6 +83,7 @@ public class SecurityConfig {
 
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/v1/movies/**").permitAll()
+                .requestMatchers(HttpMethod.GET,"/api/**").authenticated()
                 .anyRequest()
                 .authenticated()
             );
