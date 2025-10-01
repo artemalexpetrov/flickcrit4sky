@@ -125,3 +125,9 @@ prepared [Postman](./docs/flickcrit.postman_collection.json) collection.
 # Known Issues
 * Unable to run the dockerized ELK stack on ARM-based Mac devices
 * Running with Podman may require additional configuration
+
+# Further Development
+* Introduce UUID for the User model to avoid exposure of PII data in authentication token
+* Introduce shared cache and a proper strategy to calculate and store movie ratings considering potential intensive loading
+* Introduce a load balancer to distribute requests across multiple instances
+* Implement rate limiting and throttling mechanisms to prevent abuse and ensure fair usage
