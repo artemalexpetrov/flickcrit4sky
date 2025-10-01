@@ -10,6 +10,19 @@ Dockerization and Observability.
 
 ---
 
+## Table of Contents
+
+<!-- TOC -->
+* [Pre-Requisites](#pre-requisites)
+* [How to Run](#how-to-run)
+* [How to Build & Test](#how-to-build--test)
+* [Data Ingestion](#data-ingestion)
+* [REST API Endpoints](#rest-api-endpoints)
+* [Useful links](#useful-links)
+* [Known Issues](#known-issues)
+* [Further Development](#further-development)
+<!-- TOC -->
+
 # Pre-Requisites
 
 * Java 21
@@ -87,7 +100,6 @@ For complete list of available action and usage examples kindly
 check [Swagger](http://127.0.0.1:8080/docs/swagger-ui/index.html) or use the
 prepared [Postman](./docs/flickcrit.postman_collection.json) collection.
 
-### Authentication
 
 | Method     | Path                       | Description                                              | Require Auth / Role |
 |------------|----------------------------|----------------------------------------------------------|---------------------|
