@@ -8,6 +8,7 @@ import com.flickcrit.app.domain.model.rating.RatedMovieId;
 import com.flickcrit.app.domain.repository.MovieRepository;
 import com.flickcrit.app.domain.repository.RatingRepository;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieDto;
+import com.flickcrit.app.infrastructure.api.model.rating.AverageRatingDto;
 import com.flickcrit.app.infrastructure.api.model.rating.RatedMovieDto;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -80,12 +81,17 @@ class TopRatingPortImplTest {
             mock(MovieDto.class)
         );
 
+        List<AverageRatingDto> ratingsDto = List.of(
+            new AverageRatingDto(BigDecimal.valueOf(5.0d), 10L),
+            new AverageRatingDto(BigDecimal.valueOf(5.0d), 20L)
+        );
+
         List<RatedMovieId> ratedMovieIds = IntStream.range(0, movieIds.size())
             .mapToObj(i -> new RatedMovieId(movieIds.get(i), ratings.get(i)))
             .toList();
 
         List<RatedMovieDto> expectedMovies = IntStream.range(0, movieIds.size())
-            .mapToObj(i -> new RatedMovieDto(moviesDto.get(i), ratings.get(i)))
+            .mapToObj(i -> new RatedMovieDto(moviesDto.get(i), ratingsDto.get(i)))
             .toList();
 
         when(ratingRepositoryMock

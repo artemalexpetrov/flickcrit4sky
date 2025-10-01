@@ -2,10 +2,12 @@ package com.flickcrit.app.infrastructure.api.port.impl;
 
 import com.flickcrit.app.domain.model.movie.Movie;
 import com.flickcrit.app.domain.model.movie.MovieId;
+import com.flickcrit.app.domain.model.rating.AverageRating;
 import com.flickcrit.app.domain.model.rating.RatedMovieId;
 import com.flickcrit.app.domain.repository.MovieRepository;
 import com.flickcrit.app.domain.repository.RatingRepository;
 import com.flickcrit.app.infrastructure.api.model.movie.MovieDto;
+import com.flickcrit.app.infrastructure.api.model.rating.AverageRatingDto;
 import com.flickcrit.app.infrastructure.api.model.rating.RatedMovieDto;
 import com.flickcrit.app.infrastructure.api.port.TopRatingPort;
 import lombok.RequiredArgsConstructor;
@@ -45,12 +47,17 @@ public class TopRatingPortImpl implements TopRatingPort {
             .map(ratedId -> {
                 Movie movie = moviesById.get(ratedId.movieId());
                 MovieDto movieDto = convertToDto(movie);
-                return new RatedMovieDto(movieDto, ratedId.rating());
+                AverageRatingDto ratingDto = convertToDto(ratedId.rating());
+                return new RatedMovieDto(movieDto, ratingDto);
             }).toList();
     }
 
     private MovieDto convertToDto(Movie movie) {
         return converter.convert(movie, MovieDto.class);
+    }
+
+    private AverageRatingDto convertToDto(AverageRating rating) {
+        return converter.convert(rating, AverageRatingDto.class);
     }
 
     private Map<MovieId, Movie> getMoviesById(List<RatedMovieId> ratedMoviesIds) {

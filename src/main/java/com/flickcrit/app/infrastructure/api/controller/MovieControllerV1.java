@@ -8,6 +8,7 @@ import com.flickcrit.app.infrastructure.api.model.movie.MovieDto;
 import com.flickcrit.app.infrastructure.api.model.rating.RatedMovieDto;
 import com.flickcrit.app.infrastructure.api.port.MoviePort;
 import com.flickcrit.app.infrastructure.api.port.TopRatingPort;
+import com.flickcrit.app.infrastructure.cache.config.CacheRegions;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,6 +17,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
@@ -36,29 +39,33 @@ public class MovieControllerV1 {
     private final MoviePort port;
     private final TopRatingPort topRatedMoviesPort;
 
-
+    @GetMapping
     @Operation(summary = "Get all movies", description = "Returns a paginated list of all movies")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved movies")
-    @GetMapping
-    PageResponse<MovieDto> getMovies(@Valid PageRequestDto pagingRequest) {
+    public PageResponse<MovieDto> getMovies(@Valid PageRequestDto pagingRequest) {
         return port.getMovies(requireNonNullElse(pagingRequest, PageRequestDto.defaultRequest()));
     }
 
+    @GetMapping("/top")
     @Operation(summary = "Get top rated movies", description = "Returns a list of top rated movies")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved top rated movies")
-    @GetMapping("/top")
-    List<RatedMovieDto> getTopRatedMovies() {
+    @Cacheable(value = CacheRegions.MOVIES, key = "'topRated'", unless = "#result.isEmpty()")
+    public List<RatedMovieDto> getTopRatedMovies() {
         return topRatedMoviesPort.getTopRatedMovies();
     }
 
+    @GetMapping("/{id:\\d+}")
     @Operation(summary = "Get movie by ID", description = "Returns a movie by its ID")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the movie")
     @ApiResponse(responseCode = "404", description = "Movie not found")
-    @GetMapping("/{id:\\d+}")
-    MovieDto getMovie(@Parameter(description = "Movie ID") @PathVariable MovieId id) {
+    @Cacheable(value = CacheRegions.MOVIES, key = "#id", unless = "#result == null")
+    public MovieDto getMovie(@Parameter(description = "Movie ID") @PathVariable MovieId id) {
         return port.getMovie(id);
     }
 
+    @PostMapping
+    @Secured("ROLE_ADMIN")
+    @ResponseStatus(HttpStatus.CREATED)
     @Operation(
         summary = "Create new movie",
         description = "Creates a new movie entry"
@@ -66,13 +73,12 @@ public class MovieControllerV1 {
     @ApiResponse(responseCode = "201", description = "Movie successfully created")
     @ApiResponse(responseCode = "403", description = "Access denied")
     @SecurityRequirement(name = "Bearer Authentication")
-    @PostMapping
-    @Secured("ROLE_ADMIN")
-    @ResponseStatus(HttpStatus.CREATED)
-    MovieDto createMovie(@Parameter(description = "Movie details") @NotNull @RequestBody @Valid MovieCreateRequest request) {
+    public MovieDto createMovie(@Parameter(description = "Movie details") @NotNull @RequestBody @Valid MovieCreateRequest request) {
         return port.createMovie(request);
     }
 
+    @Secured("ROLE_ADMIN")
+    @PutMapping("/{id:\\d+}")
     @Operation(
         summary = "Update existing movie",
         description = "Updates an existing movie by its ID"
@@ -81,13 +87,16 @@ public class MovieControllerV1 {
     @ApiResponse(responseCode = "200", description = "Movie successfully updated")
     @ApiResponse(responseCode = "404", description = "Movie not found")
     @ApiResponse(responseCode = "403", description = "Access denied")
-    @Secured("ROLE_ADMIN")
-    @PutMapping("/{id:\\d+}")
-    MovieDto updateMovie(@Parameter(description = "Movie ID") @PathVariable MovieId id,
-                         @Parameter(description = "Updated movie details") @NotNull @RequestBody @Valid MovieCreateRequest request) {
+    @CacheEvict(value = CacheRegions.MOVIES, key = "#id")
+    public MovieDto updateMovie(
+        @Parameter(description = "Movie ID") @PathVariable MovieId id,
+        @Parameter(description = "Updated movie details") @NotNull @RequestBody @Valid MovieCreateRequest request) {
         return port.updateMovie(id, request);
     }
 
+    @Secured("ROLE_ADMIN")
+    @DeleteMapping("/{id:\\d+}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(
         summary = "Delete movie",
         description = "Deletes an existing movie by its ID"
@@ -96,10 +105,8 @@ public class MovieControllerV1 {
     @ApiResponse(responseCode = "204", description = "Movie successfully deleted")
     @ApiResponse(responseCode = "404", description = "Movie not found")
     @ApiResponse(responseCode = "403", description = "Access denied")
-    @Secured("ROLE_ADMIN")
-    @DeleteMapping("/{id:\\d+}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteMovie(@Parameter(description = "Movie ID") @PathVariable MovieId id) {
+    @CacheEvict(value = CacheRegions.MOVIES, key = "#id")
+    public void deleteMovie(@Parameter(description = "Movie ID") @PathVariable MovieId id) {
         port.deleteMovie(id);
     }
 }

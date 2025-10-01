@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@ActiveProfiles("it")
+@ActiveProfiles({"it", "cache-redis"})
 @Import(TestcontainersConfig.class)
 public abstract class BaseSpringBootIT {
 

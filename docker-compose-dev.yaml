@@ -1,3 +1,4 @@
 # Application infrastructure
 include:
   - infra/docker-compose-db.yaml
+  - infra/docker-compose-redis.yaml

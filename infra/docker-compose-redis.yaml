@@ -1,0 +1,26 @@
+services:
+  # ********************************************************************************
+  # ********************************************************************************
+  redis:
+    image: redis:7.0.11-alpine
+    command: redis-server --requirepass ${REDIS_PASSWORD:-redispass}
+    entrypoint: ["sh", "/usr/local/bin/custom-entrypoint.sh"]
+    volumes:
+      - redis_data:/data
+      - ./redis/setup-entrypoint.sh:/usr/local/bin/custom-entrypoint.sh
+    environment:
+      - REDIS_USERNAME=${REDIS_USERNAME}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    ports:
+      - "${REDIS_PORT}:6379"
+
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  redis_data:
+    driver: local
+    
