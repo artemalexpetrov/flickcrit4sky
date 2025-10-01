@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import static java.util.Objects.requireNonNullElse;
 
-
 @RestController
 @Secured("ROLE_ADMIN")
 @RequiredArgsConstructor
@@ -29,18 +28,19 @@ public class UserControllerV1 {
 
     private final UserPort usersPort;
 
+    @GetMapping
     @Operation(
         summary = "Get all users",
         description = "Returns a paginated list of users. Requires ADMIN role."
     )
     @ApiResponse(responseCode = "200", description = "Successfully retrieved users")
     @ApiResponse(responseCode = "403", description = "Access denied")
-    @GetMapping
     PageResponse<UserDto> getUsers(
         @Parameter(description = "Pagination parameters") @Valid PageRequestDto pageRequest) {
         return usersPort.getUsers(requireNonNullElse(pageRequest, PageRequestDto.defaultRequest()));
     }
 
+    @GetMapping("/{id:\\d+}")
     @Operation(
         summary = "Get user by ID",
         description = "Returns a single user by their ID. Requires ADMIN role."
@@ -48,11 +48,12 @@ public class UserControllerV1 {
     @ApiResponse(responseCode = "200", description = "Successfully retrieved user")
     @ApiResponse(responseCode = "404", description = "User not found")
     @ApiResponse(responseCode = "403", description = "Access denied")
-    @GetMapping("/{id:\\d+}")
     UserDto getUser(@Parameter(description = "User ID") @PathVariable UserId id) {
         return usersPort.getUser(id);
     }
 
+    @DeleteMapping("/{id:\\d+}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(
         summary = "Delete user",
         description = "Deletes a user by their ID. Requires ADMIN role."
@@ -60,8 +61,6 @@ public class UserControllerV1 {
     @ApiResponse(responseCode = "204", description = "User successfully deleted")
     @ApiResponse(responseCode = "404", description = "User not found")
     @ApiResponse(responseCode = "403", description = "Access denied")
-    @DeleteMapping("/{id:\\d+}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteUser(@Parameter(description = "User ID") @PathVariable UserId id) {
         usersPort.deleteUser(id);
     }
