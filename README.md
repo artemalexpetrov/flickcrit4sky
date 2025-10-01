@@ -142,7 +142,7 @@ prepared [Postman](./docs/flickcrit.postman_collection.json) collection.
 * (to be fixed) Admin user can delete himself even though he is an only admin
 
 # Further Development
-* Introduce token invalidation
+* Introduce token invalidation (especially for deleted users)
 * Introduce UUID for the User model to avoid exposure of PII data in authentication token
 * Introduce shared cache and a proper strategy to calculate and store movie ratings considering potential intensive loading
 * Introduce a load balancer to distribute requests across multiple instances
