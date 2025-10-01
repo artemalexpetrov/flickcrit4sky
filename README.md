@@ -24,16 +24,13 @@ Dockerization and Observability.
    ```bash
    cp .env.dist .env
    ```
-   The file contains fake "secrets" **just for the demo purposes**. \ 
+   The file contains fake "secrets" **just for the demo purposes**.
 
 2) Spin up the docker containers
    ```bash
    docker-compose up --build
    ```
-3) Navigate to `http://localhost:8080`
-
-4) Access the
-   API ([Swagger](http://127.0.0.1:8080/docs/swagger-ui/index.html), [Postman](./docs/flickcrit.postman_collection.json))
+3) Access the API ([Swagger](http://127.0.0.1:8080/docs/swagger-ui/index.html), [Postman](./docs/flickcrit.postman_collection.json))
 
 ### Troubleshooting
 * Ensure there are no port conflicts. By default, the application uses default ports for services. Adjust the `.env` file if needed
