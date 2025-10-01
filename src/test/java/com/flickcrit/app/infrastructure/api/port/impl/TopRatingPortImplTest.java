@@ -106,6 +106,10 @@ class TopRatingPortImplTest {
             .convert(any(Movie.class), eq(MovieDto.class)))
             .thenReturn(moviesDto.get(0), moviesDto.get(1));
 
+        when(converterMock
+            .convert(any(AverageRating.class), eq(AverageRatingDto.class)))
+            .thenReturn(ratingsDto.get(0), ratingsDto.get(1));
+
         // when
         List<RatedMovieDto> topRatedMovies = topRatingPort.getTopRatedMovies();
 
